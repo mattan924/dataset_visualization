@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 # dataset directory
-./data/
-./animation/
+./dataset/data/
+./dataset/animation/
