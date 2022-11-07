@@ -10,19 +10,31 @@ def cal_distance(x1, y1, x2, y2):
     return distance
 
 class Topic:
-    
-    def __init__(self, id, role, min_x, max_x, min_y, max_y, save_period):
+
+    def __init__(self, id, role, save_period, base_point=None, publish_rate=None, data_size=None, min_x=0, max_x=12, min_y=0, max_y=12):
         self.id = id
         self.role = role
-        self.base_point = self.decide_base_point(min_x, max_x, min_y, max_y)
+        self.save_period = save_period
         self.random_point = []
         self.threshold = [4]
-        self.publish_rate = random.randint(20, 200) / 100
-        self.data_size = random.randint(1, 256) # 1~256MB (MQTTの最大データサイズ)
         self.num_client_queue = queue.Queue()
         self.total_num_client = 0
-        self.save_period = save_period
         self.volume = 0
+
+        if base_point == None:
+            self.base_point = self.decide_base_point(min_x, max_x, min_y, max_y)
+        else:
+            self.base_point = base_point
+        
+        if publish_rate == None:
+            self.publish_rate = random.randint(20, 200) / 100
+        else:
+            self.publish_rate = publish_rate
+        
+        if data_size == None:
+            self.data_size = random.randint(1, 256) # 1~256MB (MQTTの最大データサイズ)
+        else:
+            self.data_size = data_size
 
 
     def decide_base_point(self, min_x, max_x, min_y, max_y):

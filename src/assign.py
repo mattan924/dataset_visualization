@@ -25,7 +25,7 @@ def assignTopic(data_traking_file, out_file, seed=0):
 
     # トピックの生成
     for i in range(num_topic):
-        all_topic.append(Topic(i, i, min_x, max_x, min_y, max_y, save_period))
+        all_topic.append(Topic(id=i, role=i, save_period=save_period, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y))
 
     writeTopicCSV(out_file, all_topic)
 

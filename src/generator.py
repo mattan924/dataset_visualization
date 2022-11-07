@@ -30,6 +30,7 @@ def generate_traking(config_file, out_file, seed=0):
     # エッジサーバの生成
     all_edge = []
 
+    # 今はエッジの数を3×3で固定している。改修ポイント
     for i in range(3):
         for j in range(3):
             id = i*3+j

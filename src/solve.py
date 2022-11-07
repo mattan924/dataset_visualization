@@ -8,7 +8,8 @@ def cal_distance(x1, y1, x2, y2):
 
 def solve_near_edge(data_file, out_file):
 
-    config_file, all_edge, all_topic, data_set_topic, min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = read_data_set_topic(data_file)
+    config_file, all_edge, all_topic, data_set_topic = read_data_set_topic(data_file)
+    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = read_config(config_file)
 
     with open(out_file, mode='w') as f:
         f.write(config_file + "\n")

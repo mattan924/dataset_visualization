@@ -29,7 +29,6 @@ def read_config(path):
 
 # トラッキングデータを読み込む
 def read_data_set_traking(path):
-    data_set_traking = []
     f = open(path)
 
     config_file = f.readline().split(',')[0]
@@ -52,6 +51,8 @@ def read_data_set_traking(path):
 
         all_edge.append(Edge(id, x, y, volume, cpu_power, num_topic))
 
+    data_set_traking = []
+
     for line in f:
         l = line.split(",")
 
@@ -73,8 +74,6 @@ def read_data_set_topic(path):
     f = open(path)
 
     config_file = f.readline().split(',')[0]
-    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = read_config(config_file)
-
 
     l = f.readline().split(',')
 
@@ -101,14 +100,14 @@ def read_data_set_topic(path):
 
         id = int(l.pop(0))
         role = int(l.pop(0))
+        save_period = int(l.pop(0))
+        base_point_x = float(l.pop(0))
+        base_point_y = float(l.pop(0))
         publish_rate = float(l.pop(0))
         data_size = int(l.pop(0))
-        save_period = int(l.pop(0))
 
-        topic = Topic(id, role, min_x, max_x, min_y, max_y, save_period)
-        topic.publish_rate = publish_rate
-        topic.data_size = data_size
-
+        topic = Topic(id, role, save_period, base_point=(base_point_x, base_point_y), publish_rate=publish_rate, data_size=data_size)
+        
         all_topic.append(topic)
 
     for line in f:
@@ -127,7 +126,7 @@ def read_data_set_topic(path):
 
         data_set_topic.append(data_topic)
 
-    return config_file, all_edge, all_topic, data_set_topic, min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed
+    return config_file, all_edge, all_topic, data_set_topic
 
 
 def read_data_set_solution(path):
@@ -163,13 +162,13 @@ def read_data_set_solution(path):
 
         id = int(l.pop(0))
         role = int(l.pop(0))
+        save_period = int(l.pop(0))
+        base_point_x = float(l.pop(0))
+        base_point_y = float(l.pop(0))
         publish_rate = float(l.pop(0))
         data_size = int(l.pop(0))
-        save_period = int(l.pop(0))
 
-        topic = Topic(id, role, min_x, max_x, min_y, max_y, save_period)
-        topic.publish_rate = publish_rate
-        topic.data_size = data_size
+        topic = Topic(id, role, save_period, base_point=(base_point_x, base_point_y), publish_rate=publish_rate, data_size=data_size)
 
         all_topic.append(topic)
 
@@ -245,7 +244,7 @@ def writeTopicCSV(filename, all_topic):
     file = open(filename, "a")
 
     for topic in all_topic:
-        file.write(f"{topic.id},{topic.role},{topic.publish_rate},{topic.data_size},{topic.save_period}\n")
+        file.write(f"{topic.id},{topic.role},{topic.save_period},{topic.base_point[0]},{topic.base_point[1]},{topic.publish_rate},{topic.data_size}\n")
 
     file.close()
 

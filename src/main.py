@@ -6,23 +6,23 @@ from solve import solve_near_edge
 
 config_file = "../dataset/config/presen_config.csv"
 
-out_file1 = "../dataset/presen/presen1.csv"
+out_file1 = "../dataset/test1.csv"
 
 generate_traking(config_file, out_file1)
 
-out_file2 = "../dataset/presen/presen1_topic1.csv"
+out_file2 = "../dataset/test1_topic1.csv"
 
 assignTopic(out_file1, out_file2)
 
-out_file3 = "../dataset/presen/presen1.gif"
+out_file3 = "../dataset/test1.gif"
 
 #create_animation(out_file2, out_file3, 20)
 
-out_file4 = "../dataset/presen/presen1_topic1_solution1.csv"
+out_file4 = "../dataset/test1_topic1_solution1.csv"
 
 solve_near_edge(out_file2, out_file4)
 
-out_file5 = "../dataset/presen/presen1_topic1_solution.gif"
+out_file5 = "../dataset/test1_topic1_solution.gif"
 
 create_animation_test(out_file4, out_file5, 20)
 
