@@ -1,10 +1,16 @@
 from data import Data_topic, Data_traking
 import random
 import math
+import pandas as pd
 
 from edge import Edge
 from topic import Topic
 
+ 
+def create_index_file(index_file):
+    with open(index_file, mode='w') as f:
+        f.write(",config_file,edge_file,topic_file,traking_file,traking_seed,assign_file,assign_seed\n")
+        f.write("data,,,,,,,")
 
 # 設定ファイルの読み込み
 def read_config(path):
@@ -25,6 +31,19 @@ def read_config(path):
     speed = int(f.readline().split(",")[1])
 
     return min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed
+
+
+# 実装する
+def read_edge(path):
+    all_edge = []
+
+    return all_edge
+
+# 実装する
+def read_topic(path):
+    all_topic = []
+
+    return all_topic
 
 
 # トラッキングデータを読み込む
@@ -213,6 +232,7 @@ def writeAssginCSV(filename, data_topic):
 
     file.close()
 
+
 def writeSolutionCSV(filename, id, time, x, y, pub_edge, sub_edge, num_topic):
     file = open(filename, "a")
 
@@ -229,10 +249,10 @@ def writeSolutionCSV(filename, id, time, x, y, pub_edge, sub_edge, num_topic):
     file.close()
 
 
-def writeEdgeCSV(filename, all_edge, num_topic):
-    file = open(filename, "a")
+def writeEdgeCSV(filename, all_edge):
+    file = open(filename, "w")
 
-    file.write(f"{len(all_edge)}, {num_topic}\n")
+    file.write("id,x,y,volume,cpu_power\n")
 
     for edge in all_edge:
         file.write(f"{edge.id},{edge.x},{edge.y},{edge.volume},{edge.cpu_power}\n")
@@ -241,7 +261,9 @@ def writeEdgeCSV(filename, all_edge, num_topic):
 
 
 def writeTopicCSV(filename, all_topic):
-    file = open(filename, "a")
+    file = open(filename, "w")
+
+    file.write("id,role,save_period,base_x,base_y,publish_rate,data_size\n")
 
     for topic in all_topic:
         file.write(f"{topic.id},{topic.role},{topic.save_period},{topic.base_point[0]},{topic.base_point[1]},{topic.publish_rate},{topic.data_size}\n")
