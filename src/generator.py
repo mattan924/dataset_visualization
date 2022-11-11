@@ -5,7 +5,7 @@ from edge import Edge
 import random
 import pandas as pd
 import os
-
+import math
 
 
 def generate_traking(index_file, config_file, out_file, seed=0):
@@ -61,47 +61,52 @@ def assignTopic(index_file, out_file, seed=0):
 
         config_file = df_index.at['data', 'config_file']
         traking_file = df_index.at['data', 'traking_file']
+        topic_file = df_index.at['data', 'topic_file']
+    
+        if math.isnan(topic_file):
+            print("Topic data is not exist. Create topic data in advance.")
+        else:
         
-        data_set_traking = read_data_set_traking(traking_file)
+            data_set_traking = read_data_set_traking(traking_file)
+            all_topic = read_topic(topic_file)
 
-        min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = read_config(config_file)
+            min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = read_config(config_file)
 
-        with open(out_file, mode='w') as f:
-            f.write(config_file + "," + str(seed) + "\n")
+            with open(out_file, mode='w') as f:
+                f.write(config_file + "," + str(seed) + "\n")
 
-        all_client = []
+            all_client = []
 
-        for i in range(num_client):
-            data_traking = data_set_traking.pop(0)
-
-            init_topic = []
-
-            for t in all_topic:
-                if t.init_topic(data_traking.x, data_traking.y):
-                    init_topic.append(t.id)
-
-            c_topic = Client_topic(data_traking.id, data_traking.x, data_traking.y, init_topic)
-
-            all_client.append(c_topic)
-
-            writeAssginCSV(out_file, Data_topic(c_topic.id, 0, c_topic.x, c_topic.y, init_topic))
-
-
-        for time in range(time_step, simulation_time, time_step):
-            for t in all_topic:
-                if t.role == 2:
-                    t.decide_random_point(min_x, max_x, min_y, max_y, time_step)
-
-            for c in all_client:
+            for i in range(num_client):
                 data_traking = data_set_traking.pop(0)
 
-                c.x = data_traking.x
-                c.y = data_traking.y
+                init_topic = []
 
-                c.select_topic(all_topic)
+                for t in all_topic:
+                    if t.init_topic(data_traking.x, data_traking.y):
+                        init_topic.append(t.id)
 
-                writeAssginCSV(out_file, Data_topic(c.id, time, c.x, c.y, c.topic))
+                c_topic = Client_topic(data_traking.id, data_traking.x, data_traking.y, init_topic)
 
+                all_client.append(c_topic)
+
+                writeAssginCSV(out_file, Data_topic(c_topic.id, 0, c_topic.x, c_topic.y, init_topic))
+
+
+            for time in range(time_step, simulation_time, time_step):
+                for t in all_topic:
+                    if t.role == 2:
+                        t.decide_random_point(min_x, max_x, min_y, max_y, time_step)
+
+                for c in all_client:
+                    data_traking = data_set_traking.pop(0)
+
+                    c.x = data_traking.x
+                    c.y = data_traking.y
+
+                    c.select_topic(all_topic)
+
+                    writeAssginCSV(out_file, Data_topic(c.id, time, c.x, c.y, c.topic))
 
 
 def generate_edge(index_file, config_file, out_file):

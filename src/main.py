@@ -4,27 +4,23 @@ from animation import *
 from solve import solve_near_edge
 
 
+index_file = "../dataset/data/index/index1.csv"
+
+create_index_file(index_file)
+
 config_file = "../dataset/config/presen_config.csv"
 
-out_file1 = "../dataset/data/test1.csv"
+traking_file = "../dataset/data/traking/test.csv"
 
-generate_traking(config_file, out_file1)
+generate_traking(index_file, config_file, traking_file)
 
-out_file2 = "../dataset/data/test1_topic1.csv"
+edge_file = "../dataset/data/edge/edge.csv"
 
-assignTopic(out_file1, out_file2)
+generate_edge(index_file, config_file, edge_file)
 
-out_file3 = "../dataset/animation/test1.gif"
+topic_file = "../dataset/data/topic/topic.csv"
 
-#create_animation(out_file2, out_file3, 20)
-
-out_file4 = "../dataset/data/test1_topic1_solution1.csv"
-
-solve_near_edge(out_file2, out_file4)
-
-out_file5 = "../dataset/animation/test1_topic1_solution.gif"
-
-create_animation_test(out_file4, out_file5, 20)
+generate_topic(index_file, config_file, topic_file)
 
 
 """
