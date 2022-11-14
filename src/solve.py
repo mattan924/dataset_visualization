@@ -1,4 +1,6 @@
-from util import *
+import util
+import math
+import pandas as pd
 
 def cal_distance(x1, y1, x2, y2):
     distance = math.sqrt(pow(x1-x2,2)+pow(y1-y2,2))
@@ -6,17 +8,20 @@ def cal_distance(x1, y1, x2, y2):
     return distance
 
 
-def solve_near_edge(data_file, out_file):
+def solve_near_edge(index_file, out_file):
+    df_index = pd.read_csv(index_file, index_col=0)
 
-    config_file, all_edge, all_topic, data_set_topic = read_data_set_topic(data_file)
-    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = read_config(config_file)
+    data_file = df_index.at['data', 'assign_file']
+    config_file = df_index.at['data', 'config_file']
+    edge_file = df_index.at['data', 'edge_file']
 
-    with open(out_file, mode='w') as f:
-        f.write(config_file + "\n")
+    df_index.at['data', 'solve_file'] = out_file
 
-    writeEdgeCSV(out_file, all_edge, num_topic)
+    df_index.to_csv(index_file)
 
-    writeTopicCSV(out_file, all_topic)
+    data_set_topic = util.read_data_set_topic(data_file)
+    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = util.read_config(config_file)
+    all_edge = util.read_edge(edge_file)
 
     # 最も近いエッジを解とするとき
     for time in range(0, simulation_time, time_step):
@@ -42,5 +47,4 @@ def solve_near_edge(data_file, out_file):
                     pub_edge.append(min_id)
                     sub_edge.append(min_id)
 
-            
-            writeSolutionCSV(out_file, id, time, data.x, data.y, pub_edge, sub_edge, num_topic)
+            util.writeSolutionCSV(out_file, id, time, data.x, data.y, pub_edge, sub_edge, num_topic)
