@@ -27,7 +27,16 @@ def generate_traking(index_file, config_file, out_file, seed=0):
 
     df_index.to_csv(index_file)
     
-    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = util.read_config(config_file)
+    parameter = util.read_config(config_file)
+
+    min_x = parameter['min_x']
+    max_x = parameter['max_x']
+    min_y = parameter['min_y']
+    max_y = parameter['max_y']
+    num_client = parameter['num_client']
+    speed = parameter['speed']
+    simulation_time = parameter['simulation_time']
+    time_step = parameter['time_step']
     
     with open(out_file, mode='w') as f:
         f.write("id,time,x,y\n")
@@ -75,7 +84,15 @@ def assignTopic(index_file, out_file, seed=0):
         data_set_traking = util.read_data_set_traking(traking_file)
         all_topic = util.read_topic(topic_file)
 
-        min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = util.read_config(config_file)
+        parameter = util.read_config(config_file)
+
+        min_x = parameter['min_x']
+        max_x = parameter['max_x']
+        min_y = parameter['min_y']
+        max_y = parameter['max_y']
+        num_client = parameter['num_client']
+        simulation_time = parameter['simulation_time']
+        time_step = parameter['time_step']
 
         all_client = []
 
@@ -121,7 +138,10 @@ def generate_edge(index_file, config_file, out_file):
 
     df_index.to_csv(index_file)
 
-    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = util.read_config(config_file)
+    parameter = util.read_config(config_file)
+
+    volume = parameter['volume']
+    cpu_power = parameter['cpu_power']
 
     # エッジサーバの生成
     all_edge = []
@@ -147,7 +167,14 @@ def generate_topic(index_file, config_file, out_file):
 
     df_index.to_csv(index_file)
     
-    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = util.read_config(config_file)
+    parameter = util.read_config(config_file)
+
+    min_x = parameter['min_x']
+    max_x = parameter['max_x']
+    min_y = parameter['min_y']
+    max_y = parameter['max_y']
+    num_topic = parameter['num_topic']
+    save_period = parameter['save_period']
 
     all_topic = []
     # トピックの生成

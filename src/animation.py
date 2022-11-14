@@ -13,7 +13,17 @@ def create_animation(index_file, out_file, FPS):
     data_file = df_index.at['data', 'assgin_file']
     edge_file = df_index.at['data', 'edge_file']
 
-    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = util.read_config(config_file)
+    parameter = util.read_config(config_file)
+
+    min_x = parameter['min_x']
+    max_x = parameter['max_x']
+    min_y = parameter['min_y']
+    max_y = parameter['max_y']
+    num_edge = parameter['num_edge']
+    num_client = parameter['num_client']
+    simulation_time = parameter['simulation_time']
+    time_step = parameter['time_step']
+
     data_set = util.read_data_set_topic(data_file)
 
     # 描画領域の設定
@@ -107,7 +117,18 @@ def create_animation_single_topic(index_file, out_file, FPS):
     data_file = df_index.at['data', 'solve_file']
     edge_file = df_index.at['data', 'edge_file']
 
-    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = util.read_config(config_file)
+    parameter = util.read_config(config_file)
+
+    min_x = parameter['min_x']
+    max_x = parameter['max_x']
+    min_y = parameter['min_y']
+    max_y = parameter['max_y']
+    num_edge = parameter['num_edge']
+    num_client = parameter['num_client']
+    num_topic = parameter['num_topic']
+    simulation_time = parameter['simulation_time']
+    time_step = parameter['time_step']
+
     data_set = util.read_data_set_solution(data_file, config_file)
 
     # 描画領域の設定

@@ -30,7 +30,14 @@ def read_config(path):
     save_period = int(f.readline().split(",")[1])
     speed = int(f.readline().split(",")[1])
 
-    return min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed
+    parameter = { 'min_x' : min_x, 'max_x' : max_x, 'min_y' : min_y, 'max_y' : max_y, 'simulation_time' : simulation_time, 'time_step' : time_step}
+    parameter1 = { 'num_client' : num_client, 'num_topic' : num_topic, 'num_edge' : num_edge}
+    parameter2 = { 'volume' : volume, 'cpu_power' : cpu_power, 'save_period' : save_period, 'speed' : speed}
+
+    parameter.update(parameter1)
+    parameter.update(parameter2)
+
+    return parameter
 
 
 def read_edge(path):
@@ -119,7 +126,9 @@ def read_data_set_topic(path):
 
 
 def read_data_set_solution(data_path, config_path):
-    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = read_config(config_path)
+    parameter = read_config(config_path)
+
+    num_topic = parameter['num_topic']
     
     f = open(data_path)
     data_set_solution = []

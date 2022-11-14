@@ -20,7 +20,13 @@ def solve_near_edge(index_file, out_file):
     df_index.to_csv(index_file)
 
     data_set_topic = util.read_data_set_topic(data_file)
-    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = util.read_config(config_file)
+    parameter = util.read_config(config_file)
+
+    simulation_time = parameter['simulation_time']
+    time_step = parameter['time_step']
+    num_client = parameter['num_client']
+    num_topic = parameter['num_topic']
+
     all_edge = util.read_edge(edge_file)
 
     # 最も近いエッジを解とするとき
