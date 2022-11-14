@@ -1,14 +1,14 @@
-from assign import *
 from generator import *
 from animation import *
+from util import *
 from solve import solve_near_edge
 
 
 index_file = "../dataset/data/index/index1.csv"
 
-create_index_file(index_file)
-
 config_file = "../dataset/config/presen_config.csv"
+
+create_index_file(index_file, config_file)
 
 traking_file = "../dataset/data/traking/test.csv"
 
@@ -21,6 +21,18 @@ generate_edge(index_file, config_file, edge_file)
 topic_file = "../dataset/data/topic/topic.csv"
 
 generate_topic(index_file, config_file, topic_file)
+
+assign_file = "../dataset/data/assign/assign.csv"
+
+assignTopic(index_file, assign_file)
+
+solve_file = "../dataset/data/solved/solve.csv"
+
+solve_near_edge(index_file, solve_file)
+
+animation_file = "../dataset/animation/animation.gif"
+
+create_animation_single_topic(index_file, animation_file, 20)
 
 
 """

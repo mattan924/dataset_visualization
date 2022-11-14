@@ -1,12 +1,20 @@
-from util import *
+import util
 from client import Client
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
+import pandas as pd
 
 
-def create_animation(data_file, out_file, FPS):
-    config_file, all_edge, all_topic, data_set, min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = read_data_set_topic(data_file)
+def create_animation(index_file, out_file, FPS):
+    df_index = pd.read_csv(index_file, index_col=0)
+
+    config_file = df_index.at['data', 'config_file']
+    data_file = df_index.at['data', 'assgin_file']
+    edge_file = df_index.at['data', 'edge_file']
+
+    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = util.read_config(config_file)
+    data_set = util.read_data_set_topic(data_file)
 
     # 描画領域の設定
     fig = plt.figure()
@@ -36,13 +44,13 @@ def create_animation(data_file, out_file, FPS):
     wind4.set_yticks(np.arange(0, 13, 4))
 
     # エッジサーバの作成
-    edge_x = np.zeros(9)
-    edge_y = np.zeros(9)
+    all_edge = util.read_edge(edge_file)
+    edge_x = np.zeros(num_edge)
+    edge_y = np.zeros(num_edge)
 
-    for i in range(3):
-        for j in range(3):
-            edge_x[i*3+j] = edge_x[i*3+j] + 2 + 4*i
-            edge_y[i+j*3] = edge_y[i+j*3] + 2 + 4*i
+    for edge in all_edge:
+        edge_x[edge.id] = edge.x
+        edge_y[edge.id] = edge.y
 
     imgs = []
 
@@ -56,7 +64,6 @@ def create_animation(data_file, out_file, FPS):
         y3_list = []
         x4_list = []
         y4_list = []
-        #line_list = []
 
         for id in range(num_client):
             data = data_set.pop(0)
@@ -74,10 +81,6 @@ def create_animation(data_file, out_file, FPS):
                     x4_list.append(data.x)
                     y4_list.append(data.y)
 
-            #idx = search_nearest_edge(data, edge_x, edge_y)
-
-            #line_list.append([(data.x, data.y), (edge_x[idx], edge_y[idx])])
-
         my_title = wind1.text(11.5, 14, 'time : {}'.format(t))
         img1_client = wind1.scatter(x1_list, y1_list, c="blue")
         img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
@@ -89,11 +92,6 @@ def create_animation(data_file, out_file, FPS):
         img4_edge = wind4.scatter(edge_x, edge_y, s=20, c="green", marker="s")
         img_list = [my_title, img1_client, img1_edge, img2_client, img2_edge, img3_client, img3_edge, img4_client, img4_edge]
 
-        #???
-        #line = line_list[0]
-        #for line in line_list:
-        #    img_list.extend(wind1.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color="k"))
-
         imgs.append(img_list)
 
     ani = animation.ArtistAnimation(fig, imgs, interval=1)
@@ -102,8 +100,15 @@ def create_animation(data_file, out_file, FPS):
     ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
 
 
-def create_animation_test(data_file, out_file, FPS):
-    config_file, all_edge, all_topic, data_set, min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = read_data_set_solution(data_file)
+def create_animation_single_topic(index_file, out_file, FPS):
+    df_index = pd.read_csv(index_file, index_col=0)
+
+    config_file = df_index.at['data', 'config_file']
+    data_file = df_index.at['data', 'solve_file']
+    edge_file = df_index.at['data', 'edge_file']
+
+    min_x, max_x, min_y, max_y, simulation_time, time_step, num_client, num_topic, num_edge, volume, cpu_power, save_period, speed = util.read_config(config_file)
+    data_set = util.read_data_set_solution(data_file, config_file)
 
     # 描画領域の設定
     fig = plt.figure()
@@ -119,12 +124,13 @@ def create_animation_test(data_file, out_file, FPS):
     wind1.set_yticks(np.arange(0, 13, 4))
 
     # エッジサーバの作成
-    edge_x = np.zeros(9)
-    edge_y = np.zeros(9)
+    all_edge = util.read_edge(edge_file)
+    edge_x = np.zeros(num_edge)
+    edge_y = np.zeros(num_edge)
 
     for edge in all_edge:
-        edge_x[edge.id-1] = edge.x
-        edge_y[edge.id-1] = edge.y
+        edge_x[edge.id] = edge.x
+        edge_y[edge.id] = edge.y
 
     imgs = []
     delay_history = []
@@ -142,7 +148,7 @@ def create_animation_test(data_file, out_file, FPS):
 
             # 実際に使う時には要修正
             for i in range(num_topic):
-                edge_id = data.topic_list[i]
+                edge_id = data.pub_edge[i]
                 if edge_id != -1:
                     x1_list.append(data.x)
                     y1_list.append(data.y)
@@ -155,13 +161,14 @@ def create_animation_test(data_file, out_file, FPS):
 
         delay = 0
         tmp = 0
-        for topic in all_topic:
+        for i in range(num_topic):
             for c1 in pub_list:
                 for c2 in sub_list:
-                    delay += cal_delay(c1, c2, all_edge)
+                    delay += util.cal_delay(c1, c2, all_edge)
                     tmp += 1
-        
+  
         delay_history.append(delay/tmp)
+
         time = [i for i in range(0, t+1, time_step)]
 
         my_title = wind1.text(11.5, 13, 'time : {}'.format(t))

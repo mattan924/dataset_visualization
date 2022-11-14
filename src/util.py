@@ -7,10 +7,10 @@ from edge import Edge
 from topic import Topic
 
  
-def create_index_file(index_file):
+def create_index_file(index_file, config_file):
     with open(index_file, mode='w') as f:
-        f.write(",config_file,edge_file,topic_file,traking_file,traking_seed,assign_file,assign_seed\n")
-        f.write("data,,,,,,,")
+        f.write(",config_file,edge_file,topic_file,traking_file,traking_seed,assign_file,assign_seed,solve_file\n")
+        f.write("data," + config_file + ",,,,,,,")
 
 # 設定ファイルの読み込み
 def read_config(path):
@@ -109,7 +109,7 @@ def read_data_set_topic(path):
 
         topic_list = []
         for t in l:
-            topic_list.append(int(t))
+            topic_list.append(int(float(t.split('\n')[0])))
 
         data_topic = Data_topic(id, time, x, y, topic_list)
 
