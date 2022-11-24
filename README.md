@@ -2,7 +2,7 @@
 トラッキングデータの生成とその可視化ツールの提供を目的とする
 
 ## このツールでできること
-
+![デモ](https://github.com/mattan924/dataset_visualization/blob/main/readme_animation.gif)
 
 ## 環境
 - Python 3.10.3
