@@ -230,7 +230,6 @@ def create_traking_animation(index_file, out_file, FPS):
     max_y = parameter['max_y']
     num_edge = parameter['num_edge']
     num_client = parameter['num_client']
-    num_topic = parameter['num_topic']
     simulation_time = parameter['simulation_time']
     time_step = parameter['time_step']
 
