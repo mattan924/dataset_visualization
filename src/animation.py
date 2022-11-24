@@ -212,3 +212,70 @@ def create_animation_single_topic(index_file, out_file, FPS):
 
     # fps は1~50までしかとれない
     ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
+
+
+
+def create_traking_animation(index_file, out_file, FPS):
+    df_index = pd.read_csv(index_file, index_col=0)
+
+    config_file = df_index.at['data', 'config_file']
+    data_file = df_index.at['data', 'traking_file']
+    edge_file = df_index.at['data', 'edge_file']
+
+    parameter = util.read_config(config_file)
+
+    min_x = parameter['min_x']
+    max_x = parameter['max_x']
+    min_y = parameter['min_y']
+    max_y = parameter['max_y']
+    num_edge = parameter['num_edge']
+    num_client = parameter['num_client']
+    num_topic = parameter['num_topic']
+    simulation_time = parameter['simulation_time']
+    time_step = parameter['time_step']
+
+    data_set = util.read_data_set_traking(data_file)
+
+    # 描画領域の設定
+    fig = plt.figure()
+    wind1 = fig.add_subplot(1, 1, 1)
+    wind1.grid()
+    wind1.set_xlim(min_x, max_x)
+    wind1.set_ylim(min_y, max_y)
+    wind1.set_xticks(np.arange(min_x, max_x+1, (max_x-min_x)/3))
+    wind1.set_yticks(np.arange(min_y, max_y+1, (max_y-min_y)/3))
+
+    # エッジサーバの作成
+    all_edge = util.read_edge(edge_file)
+    edge_x = np.zeros(num_edge)
+    edge_y = np.zeros(num_edge)
+
+    for edge in all_edge:
+        edge_x[edge.id] = edge.x
+        edge_y[edge.id] = edge.y
+
+    imgs = []
+
+    for t in range(0, simulation_time, time_step):
+        # 各タイムステップにおけるクライアントの座標を格納
+        x1_list = []
+        y1_list = []
+
+        for id in range(num_client):
+            data = data_set.pop(0)
+
+            x1_list.append(data.x)
+            y1_list.append(data.y)
+
+        my_title = wind1.text((max_x-min_x)/2 - 0.8, 13, 'time : {}'.format(t))
+        img1_client = wind1.scatter(x1_list, y1_list, c="blue")
+        img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+
+        img_list = [my_title, img1_client, img1_edge]
+
+        imgs.append(img_list)
+
+    ani = animation.ArtistAnimation(fig, imgs, interval=1)
+
+    # fps は1~50までしかとれない
+    ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
