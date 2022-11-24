@@ -215,7 +215,7 @@ def create_animation_single_topic(index_file, out_file, FPS):
 
 
 
-def create_traking_animation(index_file, out_file, FPS):
+def create_traking_animation(index_file, out_file, FPS=20):
     df_index = pd.read_csv(index_file, index_col=0)
 
     config_file = df_index.at['data', 'config_file']
