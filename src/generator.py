@@ -96,6 +96,9 @@ def assignTopic(index_file, out_file, seed=0):
 
         all_client = []
 
+        f = open(out_file, mode="w")
+        f.close()
+
         for i in range(num_client):
             data_traking = data_set_traking.pop(0)
 

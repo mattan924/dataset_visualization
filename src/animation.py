@@ -140,7 +140,7 @@ def create_animation_single_topic(index_file, out_file, FPS):
     wind1.set_xlim(min_x, max_x)
     wind1.set_ylim(min_y, max_y)
     wind2.set_xlim(0, simulation_time)
-    wind2.set_ylim(1, 2)
+    wind2.set_ylim(0.8, 1.5)
     wind1.set_xticks(np.arange(0, 13, 4))
     wind1.set_yticks(np.arange(0, 13, 4))
 

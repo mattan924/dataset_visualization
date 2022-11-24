@@ -27,6 +27,9 @@ def solve_near_edge(index_file, out_file):
     num_client = parameter['num_client']
     num_topic = parameter['num_topic']
 
+    f = open(out_file, mode="w")
+    f.close()
+
     all_edge = util.read_edge(edge_file)
 
     # 最も近いエッジを解とするとき

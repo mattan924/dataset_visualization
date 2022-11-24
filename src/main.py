@@ -3,75 +3,39 @@ from animation import *
 from util import *
 from solve import solve_near_edge
 
+generate_num = 10
 
-index_file = "../dataset/data/index/index1.csv"
+index_file = "../dataset/data/index/system_presen"
 
-config_file = "../dataset/config/presen_config.csv"
+config_file = "../dataset/config/system_presen.csv"
 
-create_index_file(index_file, config_file)
+traking_file = "../dataset/data/traking/system_presen_traking"
 
-traking_file = "../dataset/data/traking/test.csv"
+edge_file = "../dataset/data/edge/system_presen_edge"
 
-generate_traking(index_file, config_file, traking_file)
+topic_file = "../dataset/data/topic/system_presen_topic"
 
-edge_file = "../dataset/data/edge/edge.csv"
+assign_file = "../dataset/data/assign/system_presen_assign"
 
-generate_edge(index_file, config_file, edge_file)
+solve_file = "../dataset/data/solved/system_presen_solve"
 
-topic_file = "../dataset/data/topic/topic.csv"
+animation_file = "../dataset/animation/system_presen_animation"
 
-generate_topic(index_file, config_file, topic_file)
+for i in range(1, generate_num+1):
+    index_file_tmp = index_file + str(i) + ".csv"
+    create_index_file(index_file_tmp, config_file)
 
-assign_file = "../dataset/data/assign/assign.csv"
+    generate_traking(index_file_tmp, config_file, traking_file + str(i) + ".csv")
 
-assignTopic(index_file, assign_file)
+    generate_edge(index_file_tmp, config_file, edge_file + str(i) + ".csv")
 
-solve_file = "../dataset/data/solved/solve.csv"
+    generate_topic(index_file_tmp, config_file, topic_file + str(i) + ".csv")
 
-solve_near_edge(index_file, solve_file)
+    assignTopic(index_file_tmp, assign_file + str(i) + ".csv")
 
-animation_file = "../dataset/animation/animation.gif"
+    solve_near_edge(index_file_tmp, solve_file + str(i) + ".csv")
 
-create_animation_single_topic(index_file, animation_file, 20)
+    create_animation_single_topic(index_file_tmp, animation_file + str(i) + ".gif", 20)
 
+    print(f"{i}/{generate_num} created.")
 
-"""
-config_file = "../dataset/config/test.csv"
-out_file_base = "../dataset/data/"
-
-generate_number = 3
-
-for n in range(1, generate_number+1):
-    out_file = out_file_base + "data" + str(n) + ".csv"
-
-    generate_traking(config_file, out_file)
-
-    print(f"Date Generated : {n}/{generate_number}")
-
-
-data_traking_file = "../dataset/data/data1.csv"
-out_file_base = "../dataset/data/data1"
-
-generate_number = 3
-
-for n in range(1, generate_number+1):
-    out_file = out_file_base + "_topic" + str(n) + ".csv"
-
-    assignTopic(data_traking_file, out_file)
-
-    print(f"Topic assigned : {n}/{generate_number}")
-
-
-data_file_base = "../dataset/data/data1_topic"
-out_file_base = "../dataset/animation/animation1_"
-
-generate_number = 3
-
-for n in range(1, generate_number+1):
-    data_file = data_file_base + str(n) + ".csv"
-    out_file = out_file_base + str(n) + ".gif"
-
-    create_animation(data_file, out_file, 20)
-
-    print(f"created animation : {n}/{generate_number}")
-"""
