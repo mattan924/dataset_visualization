@@ -131,6 +131,7 @@ dmypy.json
 # dataset directory
 /dataset/data/
 /dataset/animation/
+/dataset/config/
 
 # mac
 .DS_Store

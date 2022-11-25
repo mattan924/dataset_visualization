@@ -90,7 +90,7 @@ seed値を引数に与えない場合のデフォルト値は0になっており
 
 ![トラッキングデータ](/traking_csv.png)
 
-### トラッキングデータの可視化
+### 4. トラッキングデータの可視化
 
 animation.py の create_traking_animation(index_file, out_file, FPS) という関数を呼び出すことでトラッキングデータの可視化を行うことができる。
 
