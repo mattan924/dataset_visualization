@@ -3,11 +3,10 @@ from client import Client_traking
 from client import Client_topic
 from data import Data_traking, Data_topic
 from edge import Edge
-from topic import Topic
+from topic import Topic_uniform, Topic_local, Topic_incident
 import random
 import pandas as pd
 import os
-import math
 
 
 def generate_traking(index_file, config_file, out_file, seed=0):
@@ -114,7 +113,6 @@ def assignTopic(index_file, out_file, seed=0):
 
             util.writeAssginCSV(out_file, Data_topic(c_topic.id, 0, c_topic.x, c_topic.y, init_topic))
 
-
         for time in range(time_step, simulation_time, time_step):
             for t in all_topic:
                 if t.role == 2:
@@ -176,12 +174,15 @@ def generate_topic(index_file, config_file, out_file):
     max_x = parameter['max_x']
     min_y = parameter['min_y']
     max_y = parameter['max_y']
-    num_topic = parameter['num_topic']
     save_period = parameter['save_period']
 
     all_topic = []
     # トピックの生成
-    for i in range(num_topic):
-        all_topic.append(Topic(id=i, role=i, save_period=save_period, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y))
+    t = Topic_uniform(0, save_period)
+    all_topic.append(t)
+    t = Topic_local(1, save_period, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
+    all_topic.append(t)
+    t = Topic_incident(2, save_period)
+    all_topic.append(t)
 
     util.writeTopicCSV(out_file, all_topic)

@@ -1,10 +1,11 @@
 from data import Data_topic, Data_traking, Data_solution
 import random
 import math
+import sys
 import pandas as pd
 
 from edge import Edge
-from topic import Topic
+from topic import Topic_uniform, Topic_local, Topic_incident
 
  
 def create_index_file(index_file, config_file):
@@ -74,7 +75,15 @@ def read_topic(path):
         publish_rate = data['publish_rate']
         data_size = data['data_size']
 
-        topic = Topic(id, role, save_period, base_point=(base_x, base_y), publish_rate=publish_rate, data_size=data_size)
+        if role == 0:
+            topic = Topic_uniform(id, save_period, publish_rate=publish_rate, data_size=data_size)
+        elif role == 1:
+            topic = Topic_local(id, save_period, publish_rate=publish_rate, data_size=data_size, base_point=(base_x, base_y))
+        elif role == 2:
+            topic = Topic_incident(id, save_period, publish_rate=publish_rate, data_size=data_size)
+        else:
+            sys.exit("追加されていない role です。関数 read_topic を修正して下さい")
+
         all_topic.append(topic)
 
     return all_topic
@@ -212,7 +221,14 @@ def writeTopicCSV(filename, all_topic):
     file.write("id,role,save_period,base_x,base_y,publish_rate,data_size\n")
 
     for topic in all_topic:
-        file.write(f"{topic.id},{topic.role},{topic.save_period},{topic.base_point[0]},{topic.base_point[1]},{topic.publish_rate},{topic.data_size}\n")
+        if topic.role == 0:
+            file.write(f"{topic.id},{topic.role},{topic.save_period},,,{topic.publish_rate},{topic.data_size}\n")
+        elif topic.role == 1:
+            file.write(f"{topic.id},{topic.role},{topic.save_period},{topic.base_point[0]},{topic.base_point[1]},{topic.publish_rate},{topic.data_size}\n")
+        elif topic.role == 2:
+            file.write(f"{topic.id},{topic.role},{topic.save_period},,,{topic.publish_rate},{topic.data_size}\n")
+        else:
+            sys.exit("追加されていない role です。関数writeTopicCSVを修正して下さい")
 
     file.close()
 

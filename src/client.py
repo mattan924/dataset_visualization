@@ -1,6 +1,7 @@
 import random
 import math
 import numpy as np
+import sys
 
 
 class Client_traking:
@@ -71,8 +72,8 @@ class Client_topic:
                     self.topic.append(t.id)
 
             elif t.role == 1:
-                rank = t.cal_rank(self.x, self.y)
-                if rank == 0:
+                distance = math.sqrt(pow(self.x - t.base_point[0], 2) + pow(self.y - t.base_point[1], 2))
+                if distance <= t.threshold:
                     self.topic.append(t.id)
         
             elif t.role == 2:       
@@ -81,6 +82,8 @@ class Client_topic:
 
                     if rank == 0:
                         self.topic.append(t.id)
+            else:
+                sys.exit("追加されていない role です。class Client_topic の select_topic を修正して下さい。")
             
         return self.topic  
     
