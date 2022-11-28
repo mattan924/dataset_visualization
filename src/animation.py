@@ -10,7 +10,7 @@ def create_animation(index_file, out_file, FPS):
     df_index = pd.read_csv(index_file, index_col=0)
 
     config_file = df_index.at['data', 'config_file']
-    data_file = df_index.at['data', 'assgin_file']
+    data_file = df_index.at['data', 'assign_file']
     edge_file = df_index.at['data', 'edge_file']
 
     parameter = util.read_config(config_file)
