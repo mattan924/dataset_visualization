@@ -6,13 +6,16 @@ import numpy as np
 import pandas as pd
 
 
+# 2×2のウィンドウで3種類のトピックを持つアニメーションの生成
 def create_animation(index_file, out_file, FPS):
+    # インデックスファイルの読み込み
     df_index = pd.read_csv(index_file, index_col=0)
 
     config_file = df_index.at['data', 'config_file']
     data_file = df_index.at['data', 'assign_file']
     edge_file = df_index.at['data', 'edge_file']
 
+    # 設定ファイルからパラメーターの取り出し
     parameter = util.read_config(config_file)
 
     min_x = parameter['min_x']
@@ -24,6 +27,7 @@ def create_animation(index_file, out_file, FPS):
     simulation_time = parameter['simulation_time']
     time_step = parameter['time_step']
 
+    # トピック情報付きのトラッキングデータを読み込み
     data_set = util.read_data_set_topic(data_file)
 
     # 描画領域の設定
@@ -53,7 +57,7 @@ def create_animation(index_file, out_file, FPS):
     wind4.set_xticks(np.arange(0, 13, 4))
     wind4.set_yticks(np.arange(0, 13, 4))
 
-    # エッジサーバの作成
+    # エッジサーバの読み込み
     all_edge = util.read_edge(edge_file)
     edge_x = np.zeros(num_edge)
     edge_y = np.zeros(num_edge)
@@ -64,14 +68,19 @@ def create_animation(index_file, out_file, FPS):
 
     imgs = []
 
+    # アニメーションの作成準備
     for t in range(0, simulation_time, time_step):
         # 各タイムステップにおけるクライアントの座標を格納
+        # クラアント全体の分布
         x1_list = []
         y1_list = []
+        # トピック1の分布
         x2_list = []
         y2_list = []
+        # トピック2の分布
         x3_list = []
         y3_list = []
+        # トピック3の分布
         x4_list = []
         y4_list = []
 
@@ -80,6 +89,7 @@ def create_animation(index_file, out_file, FPS):
             x1_list.append(data.x)
             y1_list.append(data.y)
 
+            # トピックの割り当て状況を元に各分布の座標変数に追加
             for topic in data.topic_list:
                 if topic == 0:
                     x2_list.append(data.x)
@@ -91,6 +101,7 @@ def create_animation(index_file, out_file, FPS):
                     x4_list.append(data.x)
                     y4_list.append(data.y)
 
+        # 各タイムステップでの描画情報の作成
         my_title = wind1.text(11.5, 14, 'time : {}'.format(t))
         img1_client = wind1.scatter(x1_list, y1_list, c="blue")
         img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
@@ -102,14 +113,19 @@ def create_animation(index_file, out_file, FPS):
         img4_edge = wind4.scatter(edge_x, edge_y, s=20, c="green", marker="s")
         img_list = [my_title, img1_client, img1_edge, img2_client, img2_edge, img3_client, img3_edge, img4_client, img4_edge]
 
+        # 描画情報を追加
         imgs.append(img_list)
-
+    
+    # アニメーションの作成
     ani = animation.ArtistAnimation(fig, imgs, interval=1)
 
+    # アニメーションの出力
     # fps は1~50までしかとれない
     ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
 
 
+# 指定したトピックの分布をアニメーション化
+# 要改修
 def create_animation_single_topic(index_file, out_file, FPS):
     df_index = pd.read_csv(index_file, index_col=0)
 
@@ -214,14 +230,16 @@ def create_animation_single_topic(index_file, out_file, FPS):
     ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
 
 
-
+# トラッキング情報のアニメーション化
 def create_traking_animation(index_file, out_file, FPS=20):
+    # インデックスファイルの読み込み
     df_index = pd.read_csv(index_file, index_col=0)
 
     config_file = df_index.at['data', 'config_file']
     data_file = df_index.at['data', 'traking_file']
     edge_file = df_index.at['data', 'edge_file']
 
+    # 設定ファイルからパラメーター情報の取り出し
     parameter = util.read_config(config_file)
 
     min_x = parameter['min_x']
@@ -233,6 +251,7 @@ def create_traking_animation(index_file, out_file, FPS=20):
     simulation_time = parameter['simulation_time']
     time_step = parameter['time_step']
 
+    # トラッキングデータの読み込み
     data_set = util.read_data_set_traking(data_file)
 
     # 描画領域の設定
@@ -255,6 +274,7 @@ def create_traking_animation(index_file, out_file, FPS=20):
 
     imgs = []
 
+    # アニメーションの準備
     for t in range(0, simulation_time, time_step):
         # 各タイムステップにおけるクライアントの座標を格納
         x1_list = []
@@ -266,6 +286,7 @@ def create_traking_animation(index_file, out_file, FPS=20):
             x1_list.append(data.x)
             y1_list.append(data.y)
 
+        # 各タイムステップにおける描画情報の作成
         my_title = wind1.text((max_x-min_x)/2 - 0.8, 13, 'time : {}'.format(t))
         img1_client = wind1.scatter(x1_list, y1_list, c="blue")
         img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
@@ -274,7 +295,9 @@ def create_traking_animation(index_file, out_file, FPS=20):
 
         imgs.append(img_list)
 
+    # アニメーションの作成
     ani = animation.ArtistAnimation(fig, imgs, interval=1)
 
+    # アニメーションの出力
     # fps は1~50までしかとれない
     ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
