@@ -20,6 +20,7 @@ class Client_traking:
 
         tmp = random.uniform(0, 100)
 
+        # 進行方向の決定
         if tmp <= 98.5:
             self.direction = random.gauss(self.direction, 1)
         elif tmp <= 99.25:
@@ -34,9 +35,11 @@ class Client_traking:
         elif self.direction < 0:
             self.direction = 360 - (0 - self.direction)%360
 
+        # 位置の更新
         self.x = self.x + ((speed/3600)*time_step)*math.cos(math.radians(self.direction))
         self.y = self.y + ((speed/3600)*time_step)*math.sin(math.radians(self.direction))
 
+        # 領域外に出ないように調整
         if self.x > max_x:
             self.x = max_x
         elif self.x < min_x:
@@ -64,6 +67,7 @@ class Client_topic:
         now_topic = self.topic.copy()
         self.topic.clear()
 
+        # トピックごとの選択方法
         for t in all_topic:
             if t.role == 0:
                 if now_topic.count(t.id) == 1 and random.uniform(0, 100) < 99.9:

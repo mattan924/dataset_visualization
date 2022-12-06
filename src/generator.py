@@ -65,9 +65,9 @@ def generate_traking(index_file, config_file, out_file, seed=0):
     for time in range(0, simulation_time, time_step):
         for c in all_client:
             # クライアントをランダムに移動させる
-            x, y = c.random_walk(time_step, min_x, max_x, min_y, max_y)
+            c.random_walk(time_step, min_x, max_x, min_y, max_y)
 
-            util.writeTrakingCSV(out_file, Data_traking(c.id, time, x, y))
+            util.writeTrakingCSV(out_file, Data_traking(c.id, time, c.x, c.y))
 
 
 # トラッキングデータにトピックを割り当てる

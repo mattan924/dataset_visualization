@@ -124,7 +124,7 @@ def create_animation(index_file, out_file, FPS):
     ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
 
 
-# 指定したトピックの分布をアニメーション化
+# 割り当て付きの分布の可視化
 # 要改修
 def create_animation_single_topic(index_file, out_file, FPS):
     df_index = pd.read_csv(index_file, index_col=0)
