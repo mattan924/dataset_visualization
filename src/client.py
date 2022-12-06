@@ -1,6 +1,7 @@
 import random
 import math
 import numpy as np
+import sys
 
 
 class Client_traking:
@@ -19,6 +20,7 @@ class Client_traking:
 
         tmp = random.uniform(0, 100)
 
+        # 進行方向の決定
         if tmp <= 98.5:
             self.direction = random.gauss(self.direction, 1)
         elif tmp <= 99.25:
@@ -33,9 +35,11 @@ class Client_traking:
         elif self.direction < 0:
             self.direction = 360 - (0 - self.direction)%360
 
+        # 位置の更新
         self.x = self.x + ((speed/3600)*time_step)*math.cos(math.radians(self.direction))
         self.y = self.y + ((speed/3600)*time_step)*math.sin(math.radians(self.direction))
 
+        # 領域外に出ないように調整
         if self.x > max_x:
             self.x = max_x
         elif self.x < min_x:
@@ -63,6 +67,7 @@ class Client_topic:
         now_topic = self.topic.copy()
         self.topic.clear()
 
+        # トピックごとの選択方法
         for t in all_topic:
             if t.role == 0:
                 if now_topic.count(t.id) == 1 and random.uniform(0, 100) < 99.9:
@@ -71,8 +76,8 @@ class Client_topic:
                     self.topic.append(t.id)
 
             elif t.role == 1:
-                rank = t.cal_rank(self.x, self.y)
-                if rank == 0:
+                distance = math.sqrt(pow(self.x - t.base_point[0], 2) + pow(self.y - t.base_point[1], 2))
+                if distance <= t.threshold:
                     self.topic.append(t.id)
         
             elif t.role == 2:       
@@ -81,6 +86,8 @@ class Client_topic:
 
                     if rank == 0:
                         self.topic.append(t.id)
+            else:
+                sys.exit("追加されていない role です。class Client_topic の select_topic を修正して下さい。")
             
         return self.topic  
     
