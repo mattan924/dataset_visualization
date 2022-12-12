@@ -55,41 +55,51 @@ class Client_traking:
 
 class Client_topic:
     
-    def __init__(self, id, x, y, init_topic):
+    def __init__(self, id, x, y, pub_topic, sub_topic):
         self.id = id
         self.x = x
         self.y = y
-        self.topic = init_topic
+        self.pub_topic = pub_topic
+        self.sub_topic = sub_topic
 
 
     # topic の選択をするメソッド
     def select_topic(self, all_topic):
-        now_topic = self.topic.copy()
-        self.topic.clear()
+        now_pub_topic = self.pub_topic.copy()
+        now_sub_topic = self.sub_topic.copy()
+        self.pub_topic = np.zeros(len(all_topic))
+        self.sub_topic = np.zeros(len(all_topic))
 
         # トピックごとの選択方法
         for t in all_topic:
             if t.role == 0:
-                if now_topic.count(t.id) == 1 and random.uniform(0, 100) < 99.9:
-                    self.topic.append(t.id)
-                elif now_topic.count(t.id) == 0 and random.uniform(0, 100) < 0.1:
-                    self.topic.append(t.id)
+                if now_pub_topic[t.id] == 1 and random.uniform(0, 100) < 99.9:
+                    self.pub_topic[t.id] = True
+                elif now_pub_topic[t.id] == 0 and random.uniform(0, 100) < 0.1:
+                    self.pub_topic[t.id] = True
+
+                if now_sub_topic[t.id] == 1 and random.uniform(0, 100) < 99.9:
+                    self.sub_topic[t.id] = True  
+                elif now_sub_topic[t.id] == 0 and random.uniform(0, 100) < 0.1:
+                    self.sub_topic[t.id] = True                   
 
             elif t.role == 1:
                 distance = math.sqrt(pow(self.x - t.base_point[0], 2) + pow(self.y - t.base_point[1], 2))
                 if distance <= t.threshold:
-                    self.topic.append(t.id)
+                    self.pub_topic[t.id] = True
+                    self.sub_topic[t.id] = True
         
             elif t.role == 2:       
                 for point in t.random_point:
                     rank = point.cal_rank(self.x, self.y)
 
                     if rank == 0:
-                        self.topic.append(t.id)
+                        self.pub_topic[t.id] = True
+                        self.sub_topic[t.id] = True
             else:
                 sys.exit("追加されていない role です。class Client_topic の select_topic を修正して下さい。")
             
-        return self.topic  
+        return self.pub_topic, self.sub_topic  
     
 
 class Client:

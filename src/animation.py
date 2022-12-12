@@ -24,11 +24,12 @@ def create_animation(index_file, out_file, FPS):
     max_y = parameter['max_y']
     num_edge = parameter['num_edge']
     num_client = parameter['num_client']
+    num_topic = parameter['num_topic']
     simulation_time = parameter['simulation_time']
     time_step = parameter['time_step']
 
     # トピック情報付きのトラッキングデータを読み込み
-    data_set = util.read_data_set_topic(data_file)
+    data_set = util.read_data_set_topic(data_file, num_topic)
 
     # 描画領域の設定
     fig = plt.figure()
@@ -72,46 +73,51 @@ def create_animation(index_file, out_file, FPS):
     for t in range(0, simulation_time, time_step):
         # 各タイムステップにおけるクライアントの座標を格納
         # クラアント全体の分布
-        x1_list = []
-        y1_list = []
-        # トピック1の分布
-        x2_list = []
-        y2_list = []
-        # トピック2の分布
-        x3_list = []
-        y3_list = []
-        # トピック3の分布
-        x4_list = []
-        y4_list = []
+        x_list = []
+        y_list = []
+        # 各トピックの分布
+        pub_x_list = [[] for i in range(3)]
+        pub_y_list = [[] for i in range(3)]
+        sub_x_list = [[] for i in range(3)]
+        sub_y_list = [[] for i in range(3)]
+        pub_sub_x_list = [[] for i in range(3)]
+        pub_sub_y_list = [[] for i in range(3)]
 
         for id in range(num_client):
             data = data_set.pop(0)
-            x1_list.append(data.x)
-            y1_list.append(data.y)
+            x_list.append(data.x)
+            y_list.append(data.y)
 
             # トピックの割り当て状況を元に各分布の座標変数に追加
-            for topic in data.topic_list:
-                if topic == 0:
-                    x2_list.append(data.x)
-                    y2_list.append(data.y)
-                elif topic == 1:
-                    x3_list.append(data.x)
-                    y3_list.append(data.y)
-                elif topic == 2:
-                    x4_list.append(data.x)
-                    y4_list.append(data.y)
+            for i in range(3):
+                if data.pub_topic[i] == True and data.sub_topic[i] == True:
+                    pub_sub_x_list[i].append(data.x)
+                    pub_sub_y_list[i].append(data.y)
+                elif data.pub_topic[i] == True:
+                    pub_x_list[i].append(data.x)
+                    pub_y_list[i].append(data.y)
+                elif data.sub_topic[i] == True:
+                    sub_x_list[i].append(data.x)
+                    sub_y_list[i].append(data.y)
+
 
         # 各タイムステップでの描画情報の作成
         my_title = wind1.text(11.5, 14, 'time : {}'.format(t))
-        img1_client = wind1.scatter(x1_list, y1_list, c="blue")
+        img1_client = wind1.scatter(x_list, y_list, c="blue")
         img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
-        img2_client = wind2.scatter(x2_list, y2_list, c="blue")
+        img2_pub = wind2.scatter(pub_x_list[0], pub_y_list[0], c="red")
+        img2_sub = wind2.scatter(sub_x_list[0], sub_y_list[0], c="blue")
+        img2_pub_sub = wind2.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
         img2_edge = wind2.scatter(edge_x, edge_y, s=20, c="green", marker="s")
-        img3_client = wind3.scatter(x3_list, y3_list, c="blue")
+        img3_pub = wind3.scatter(pub_x_list[1], pub_y_list[1], c="red")
+        img3_sub = wind3.scatter(sub_x_list[1], sub_y_list[1], c="blue")
+        img3_pub_sub = wind3.scatter(pub_sub_x_list[1], pub_sub_y_list[1], c="purple")
         img3_edge = wind3.scatter(edge_x, edge_y, s=20, c="green", marker="s")
-        img4_client = wind4.scatter(x4_list, y4_list, c="blue")
+        img4_pub = wind4.scatter(pub_x_list[2], pub_y_list[2], c="red")
+        img4_sub = wind4.scatter(sub_x_list[2], sub_y_list[2], c="blue")
+        img4_pub_sub = wind4.scatter(pub_sub_x_list[2], pub_sub_y_list[2], c="purple")
         img4_edge = wind4.scatter(edge_x, edge_y, s=20, c="green", marker="s")
-        img_list = [my_title, img1_client, img1_edge, img2_client, img2_edge, img3_client, img3_edge, img4_client, img4_edge]
+        img_list = [my_title, img1_client, img1_edge, img2_pub, img2_sub, img2_pub_sub, img2_edge, img3_pub, img3_sub, img3_pub_sub, img3_edge, img4_pub, img4_sub, img4_pub_sub, img4_edge]
 
         # 描画情報を追加
         imgs.append(img_list)
