@@ -6,6 +6,7 @@ from edge import Edge
 from topic import Topic_uniform, Topic_local, Topic_incident
 import random
 import pandas as pd
+import numpy as np
 import os
 import sys
 
@@ -99,6 +100,7 @@ def assignTopic(index_file, out_file, seed=0):
         data_set_traking = util.read_data_set_traking(traking_file)
         # エッジサーバのデータの読み込み
         all_topic = util.read_topic(topic_file)
+        
         # パラメーター情報を読み取り、取り出す
         parameter = util.read_config(config_file)
 
@@ -107,6 +109,7 @@ def assignTopic(index_file, out_file, seed=0):
         min_y = parameter['min_y']
         max_y = parameter['max_y']
         num_client = parameter['num_client']
+        num_topic = parameter['num_topic']
         simulation_time = parameter['simulation_time']
         time_step = parameter['time_step']
 
@@ -121,17 +124,22 @@ def assignTopic(index_file, out_file, seed=0):
             data_traking = data_set_traking.pop(0)
 
             # 初期トピックの割り当て
-            init_topic = []
+            init_pub_topic = np.zeros(num_topic)
+            init_sub_topic = np.zeros(num_topic)
 
             for t in all_topic:
                 if t.init_topic(data_traking.x, data_traking.y):
-                    init_topic.append(t.id)
+                    init_pub_topic[t.id] = True
+                
+                if t.init_topic(data_traking.x, data_traking.y):
+                    init_sub_topic[t.id] = True
+               
 
-            c_topic = Client_topic(data_traking.id, data_traking.x, data_traking.y, init_topic)
+            c_topic = Client_topic(data_traking.id, data_traking.x, data_traking.y, init_pub_topic, init_sub_topic)
 
             all_client.append(c_topic)
 
-            util.writeAssginCSV(out_file, Data_topic(c_topic.id, 0, c_topic.x, c_topic.y, init_topic))
+            util.writeAssginCSV(out_file, Data_topic(c_topic.id, 0, c_topic.x, c_topic.y, c_topic.pub_topic, c_topic.sub_topic))
 
         # 時間を1ステップずつ進めにがら、トピックを割り当てる
         for time in range(time_step, simulation_time, time_step):
@@ -149,7 +157,7 @@ def assignTopic(index_file, out_file, seed=0):
 
                 c.select_topic(all_topic)
 
-                util.writeAssginCSV(out_file, Data_topic(c.id, time, c.x, c.y, c.topic))
+                util.writeAssginCSV(out_file, Data_topic(c.id, time, c.x, c.y, c.pub_topic, c.sub_topic))
 
 
 # エッジサーバの生成

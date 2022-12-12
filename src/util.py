@@ -3,6 +3,7 @@ import random
 import math
 import sys
 import pandas as pd
+import numpy as np
 
 from edge import Edge
 from topic import Topic_uniform, Topic_local, Topic_incident
@@ -67,8 +68,8 @@ def read_topic(path):
     all_topic = []
     for i in range(num_topic):
         data = df.iloc[i]
-        id = data['id']
-        role = data['role']
+        id = int(data['id'])
+        role = int(data['role'])
         save_period = data['save_period']
         base_x = data['base_x']
         base_y = data['base_y']
@@ -111,7 +112,7 @@ def read_data_set_traking(path):
 
 
 # トピックの情報を持つデータを読み込む
-def read_data_set_topic(path):
+def read_data_set_topic(path, num_topic):
     data_set_topic = []
     f = open(path)
 
@@ -123,11 +124,19 @@ def read_data_set_topic(path):
         x = float(l.pop(0))
         y = float(l.pop(0))
 
-        topic_list = []
-        for t in l:
-            topic_list.append(int(float(t.split('\n')[0])))
+        pub_topic = np.zeros(num_topic)
+        for i in range(num_topic):
+            tmp = float(l.pop(0).split('\n')[0])
+            if tmp == True:
+                pub_topic[i] = True
 
-        data_topic = Data_topic(id, time, x, y, topic_list)
+        sub_topic = np.zeros(num_topic)
+        for i in range(num_topic):
+            tmp = float(l.pop(0).split('\n')[0])
+            if tmp == True:
+                sub_topic[i] = True
+                
+        data_topic = Data_topic(id, time, x, y, pub_topic, sub_topic)
 
         data_set_topic.append(data_topic)
 
@@ -180,7 +189,10 @@ def writeAssginCSV(filename, data_topic):
 
     file.write(f"{data_topic.id},{data_topic.time},{data_topic.x},{data_topic.y}")
 
-    for topic in data_topic.topic_list:
+    for topic in data_topic.pub_topic:
+        file.write(f",{topic}")
+
+    for topic in data_topic.sub_topic:
         file.write(f",{topic}")
     
     file.write("\n")

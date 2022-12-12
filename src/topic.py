@@ -125,8 +125,7 @@ class Point:
 
 
     def cal_rank(self, x, y):
-        distance = math.sqrt(pow(x, y, self.x, self.y))
-        distance = math.sqrt(pow(x - self.x) + pow(y - self.y))
+        distance = math.sqrt(pow(x - self.x, 2) + pow(y - self.y, 2))
         
         if distance < self.threshold:
             return 0

@@ -10,12 +10,13 @@ class Data_traking:
 
 class Data_topic:
 
-    def __init__(self, id, time, x, y, topic_list):
+    def __init__(self, id, time, x, y, pub_topic, sub_topic):
         self.id = id
         self.time = time
         self.x = x
         self.y = y
-        self.topic_list = topic_list
+        self.pub_topic = pub_topic
+        self.sub_topic = sub_topic
 
 
 class Data_solution:
