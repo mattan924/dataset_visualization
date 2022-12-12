@@ -133,7 +133,6 @@ def assignTopic(index_file, out_file, seed=0):
                 
                 if t.init_topic(data_traking.x, data_traking.y):
                     init_sub_topic[t.id] = True
-               
 
             c_topic = Client_topic(data_traking.id, data_traking.x, data_traking.y, init_pub_topic, init_sub_topic)
 
