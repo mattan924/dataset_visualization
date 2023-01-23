@@ -8,12 +8,9 @@ import queue
 
 class Topic(metaclass = ABCMeta):
 
-    def __init__(self, id, save_period, publish_rate, data_size):
+    def __init__(self, id, save_period, publish_rate, data_size, require_cycle):
         self.id = id
         self.save_period = save_period
-        self.num_client_queue = queue.Queue()
-        self.total_num_client = 0
-        self.volume = 0
 
         if publish_rate == None:
             self.publish_rate = random.randint(10, 1000) / 100
@@ -22,6 +19,13 @@ class Topic(metaclass = ABCMeta):
 
         if data_size == None:
             self.data_size = random.randint(1, 256) # 1~256 MB (MQTTの最大データサイズ)
+        else:
+            self.data_size = data_size
+
+        if require_cycle == None:
+            self.require_cycle = random.randint(1e4, 1e5)
+        else:
+            self.require_cycle = require_cycle
 
 
     @abstractclassmethod
@@ -29,26 +33,10 @@ class Topic(metaclass = ABCMeta):
         pass
 
 
-    def cal_volume(self, time_step):
-        self.cal_volume = self.data_size*self.publish_rate*time_step*self.total_num_client
-
-    
-    def update_client(self, new_num_client, time_step):
-        if self.num_client_queue.qsize() < self.save_period/time_step:
-            self.num_client_queue.put(new_num_client)
-            self.total_num_client = self.total_num_client + new_num_client
-        elif self.num_client_queue.qsize() == self.save_period/time_step:
-            old_num_client = self.num_client_queue.get()
-            self.num_client_queue.put(new_num_client)
-            self.total_num_client = self.total_num_client + new_num_client - old_num_client
-        else:
-            sys.exit("save_period が time_step の整数倍になっていません")
-
-
 class Topic_uniform(Topic):
 
-    def __init__(self, id, save_period, publish_rate=None, data_size=None):
-        super().__init__(id, save_period, publish_rate, data_size)
+    def __init__(self, id, save_period, publish_rate=None, data_size=None, require_cycle=None):
+        super().__init__(id, save_period, publish_rate, data_size, require_cycle)
         self.role = 0
 
 
@@ -61,8 +49,8 @@ class Topic_uniform(Topic):
 
 class Topic_local(Topic):
 
-    def __init__(self, id, save_period, publish_rate=None, data_size=None, base_point=None, min_x=0, max_x=12, min_y=0, max_y=12):
-        super().__init__(id, save_period, publish_rate, data_size)
+    def __init__(self, id, save_period, publish_rate=None, data_size=None, require_cycle=None, base_point=None, min_x=0, max_x=12, min_y=0, max_y=12):
+        super().__init__(id, save_period, publish_rate, data_size, require_cycle)
         self.role = 1
         self.threshold = 4
 
@@ -83,8 +71,8 @@ class Topic_local(Topic):
 
 class Topic_incident(Topic):
 
-    def __init__(self, id, save_period, publish_rate=None, data_size=None):
-        super().__init__(id, save_period, publish_rate, data_size)
+    def __init__(self, id, save_period, publish_rate=None, data_size=None, require_cycle=None):
+        super().__init__(id, save_period, publish_rate, data_size, require_cycle)
         self.role = 2
         self.random_point = []
 

@@ -127,12 +127,16 @@ def assignTopic(index_file, out_file, seed=0):
             init_pub_topic = np.zeros(num_topic)
             init_sub_topic = np.zeros(num_topic)
 
-            for t in all_topic:
-                if t.init_topic(data_traking.x, data_traking.y):
-                    init_pub_topic[t.id] = True
-                
-                if t.init_topic(data_traking.x, data_traking.y):
-                    init_sub_topic[t.id] = True
+            flag = False
+            while(not flag):
+                for t in all_topic:
+                    if t.init_topic(data_traking.x, data_traking.y):
+                        init_pub_topic[t.id] = True
+                        flag = True
+                    
+                    if t.init_topic(data_traking.x, data_traking.y):
+                        init_sub_topic[t.id] = True
+                        flag = True
 
             c_topic = Client_topic(data_traking.id, data_traking.x, data_traking.y, init_pub_topic, init_sub_topic)
 
@@ -217,10 +221,6 @@ def generate_topic(index_file, config_file, out_file):
     all_topic = []
     # トピックの生成
     t = Topic_uniform(0, save_period)
-    all_topic.append(t)
-    t = Topic_local(1, save_period, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
-    all_topic.append(t)
-    t = Topic_incident(2, save_period)
     all_topic.append(t)
 
     util.writeTopicCSV(out_file, all_topic)

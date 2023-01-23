@@ -70,18 +70,19 @@ def read_topic(path):
         data = df.iloc[i]
         id = int(data['id'])
         role = int(data['role'])
-        save_period = data['save_period']
-        base_x = data['base_x']
-        base_y = data['base_y']
+        save_period = data['save_period']        
         publish_rate = data['publish_rate']
         data_size = data['data_size']
+        require_cycle = data['require_cycle']
+        base_x = data['base_x']
+        base_y = data['base_y']
 
         if role == 0:
-            topic = Topic_uniform(id, save_period, publish_rate=publish_rate, data_size=data_size)
+            topic = Topic_uniform(id, save_period, publish_rate=publish_rate, data_size=data_size, require_cycle=require_cycle)
         elif role == 1:
-            topic = Topic_local(id, save_period, publish_rate=publish_rate, data_size=data_size, base_point=(base_x, base_y))
+            topic = Topic_local(id, save_period, publish_rate=publish_rate, data_size=data_size, require_cycle=require_cycle, base_point=(base_x, base_y))
         elif role == 2:
-            topic = Topic_incident(id, save_period, publish_rate=publish_rate, data_size=data_size)
+            topic = Topic_incident(id, save_period, publish_rate=publish_rate, data_size=data_size, require_cycle=require_cycle)
         else:
             sys.exit("追加されていない role です。関数 read_topic を修正して下さい")
 
@@ -230,15 +231,15 @@ def writeEdgeCSV(filename, all_edge):
 def writeTopicCSV(filename, all_topic):
     file = open(filename, "w")
 
-    file.write("id,role,save_period,base_x,base_y,publish_rate,data_size\n")
+    file.write("id,role,save_period,publish_rate,data_size,require_cycle,base_x,base_y\n")
 
     for topic in all_topic:
         if topic.role == 0:
-            file.write(f"{topic.id},{topic.role},{topic.save_period},,,{topic.publish_rate},{topic.data_size}\n")
+            file.write(f"{topic.id},{topic.role},{topic.save_period},{topic.publish_rate},{topic.data_size},{topic.require_cycle},,\n")
         elif topic.role == 1:
-            file.write(f"{topic.id},{topic.role},{topic.save_period},{topic.base_point[0]},{topic.base_point[1]},{topic.publish_rate},{topic.data_size}\n")
+            file.write(f"{topic.id},{topic.role},{topic.save_period},{topic.publish_rate},{topic.data_size},{topic.require_cycle},{topic.base_point[0]},{topic.base_point[1]}\n")
         elif topic.role == 2:
-            file.write(f"{topic.id},{topic.role},{topic.save_period},,,{topic.publish_rate},{topic.data_size}\n")
+            file.write(f"{topic.id},{topic.role},{topic.save_period},{topic.publish_rate},{topic.data_size},{topic.require_cycle},,\n")
         else:
             sys.exit("追加されていない role です。関数writeTopicCSVを修正して下さい")
 

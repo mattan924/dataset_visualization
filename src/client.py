@@ -73,6 +73,7 @@ class Client_topic:
         # トピックごとの選択方法
         for t in all_topic:
             if t.role == 0:
+                """
                 if now_pub_topic[t.id] == 1 and random.uniform(0, 100) < 99.9:
                     self.pub_topic[t.id] = True
                 elif now_pub_topic[t.id] == 0 and random.uniform(0, 100) < 0.1:
@@ -81,7 +82,10 @@ class Client_topic:
                 if now_sub_topic[t.id] == 1 and random.uniform(0, 100) < 99.9:
                     self.sub_topic[t.id] = True  
                 elif now_sub_topic[t.id] == 0 and random.uniform(0, 100) < 0.1:
-                    self.sub_topic[t.id] = True                   
+                    self.sub_topic[t.id] = True    
+                """
+                self.pub_topic = now_pub_topic
+                self.sub_topic = now_sub_topic               
 
             elif t.role == 1:
                 distance = math.sqrt(pow(self.x - t.base_point[0], 2) + pow(self.y - t.base_point[1], 2))
