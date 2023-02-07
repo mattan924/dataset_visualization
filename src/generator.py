@@ -216,11 +216,13 @@ def generate_topic(index_file, config_file, out_file):
     max_x = parameter['max_x']
     min_y = parameter['min_y']
     max_y = parameter['max_y']
+    num_topic = parameter['num_topic']
     save_period = parameter['save_period']
 
     all_topic = []
     # トピックの生成
-    t = Topic_uniform(0, save_period)
-    all_topic.append(t)
+    for i in range(num_topic):
+        t = Topic_uniform(i, save_period)
+        all_topic.append(t)
 
     util.writeTopicCSV(out_file, all_topic)

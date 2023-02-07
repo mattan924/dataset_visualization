@@ -103,7 +103,7 @@ def create_animation(index_file, out_file, FPS):
 
         # 各タイムステップでの描画情報の作成
         my_title = wind1.text(11.5, 14, 'time : {}'.format(t))
-        img1_client = wind1.scatter(x_list, y_list, c="blue")
+        img1_client = wind1.scatter(x_list, y_list, c="black")
         img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
         img2_pub = wind2.scatter(pub_x_list[0], pub_y_list[0], c="red")
         img2_sub = wind2.scatter(sub_x_list[0], sub_y_list[0], c="blue")
@@ -294,7 +294,7 @@ def create_traking_animation(index_file, out_file, FPS=20):
 
         # 各タイムステップにおける描画情報の作成
         my_title = wind1.text((max_x-min_x)/2 - 0.8, 13, 'time : {}'.format(t))
-        img1_client = wind1.scatter(x1_list, y1_list, c="blue")
+        img1_client = wind1.scatter(x1_list, y1_list, c="black")
         img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
 
         img_list = [my_title, img1_client, img1_edge]

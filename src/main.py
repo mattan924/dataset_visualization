@@ -10,7 +10,8 @@ traking_file = "../dataset/data/traking/test.csv"
 assign_file = "../dataset/data/assign/test.csv"
 edge_file = "../dataset/data/edge/test.csv"
 topic_file = "../dataset/data/topic/test.csv"
-animation_file = "../dataset/animation/assign_traking.gif"
+animation_file1 = "../dataset/animation/traking.gif"
+animation_file2 = "../dataset/animation/assign_traking.gif"
 
 generate_traking(index_file, config_file, traking_file)
 
@@ -20,7 +21,9 @@ generate_topic(index_file, config_file, topic_file)
 
 assignTopic(index_file, assign_file)
 
-create_assign_animation(index_file, animation_file, 20)
+create_traking_animation(index_file, animation_file1, 20)
+
+create_animation(index_file, animation_file2, 20)
 
 
 """
