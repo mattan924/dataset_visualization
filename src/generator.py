@@ -127,16 +127,16 @@ def assignTopic(index_file, out_file, seed=0):
             init_pub_topic = np.zeros(num_topic)
             init_sub_topic = np.zeros(num_topic)
 
-            flag = False
-            while(not flag):
+            flag = True
+            while(flag):
                 for t in all_topic:
                     if t.init_topic(data_traking.x, data_traking.y):
                         init_pub_topic[t.id] = True
-                        flag = True
+                        flag = False
                     
                     if t.init_topic(data_traking.x, data_traking.y):
                         init_sub_topic[t.id] = True
-                        flag = True
+                        flag = False
 
             c_topic = Client_topic(data_traking.id, data_traking.x, data_traking.y, init_pub_topic, init_sub_topic)
 
