@@ -6,8 +6,81 @@ import numpy as np
 import pandas as pd
 
 
+# トラッキング情報のアニメーション化
+def create_traking_animation(index_file, out_file, FPS=20):
+    # インデックスファイルの読み込み
+    df_index = pd.read_csv(index_file, index_col=0)
+
+    config_file = df_index.at['data', 'config_file']
+    data_file = df_index.at['data', 'traking_file']
+    edge_file = df_index.at['data', 'edge_file']
+
+    # 設定ファイルからパラメーター情報の取り出し
+    parameter = util.read_config(config_file)
+
+    min_x = parameter['min_x']
+    max_x = parameter['max_x']
+    min_y = parameter['min_y']
+    max_y = parameter['max_y']
+    num_edge = parameter['num_edge']
+    num_client = parameter['num_client']
+    simulation_time = parameter['simulation_time']
+    time_step = parameter['time_step']
+
+    # トラッキングデータの読み込み
+    data_set = util.read_data_set_traking(data_file)
+
+    # 描画領域の設定
+    fig = plt.figure()
+    wind1 = fig.add_subplot(1, 1, 1)
+    wind1.grid()
+    wind1.set_xlim(min_x, max_x)
+    wind1.set_ylim(min_y, max_y)
+    wind1.set_xticks(np.arange(min_x, max_x+1, (max_x-min_x)/3))
+    wind1.set_yticks(np.arange(min_y, max_y+1, (max_y-min_y)/3))
+
+    # エッジサーバの作成
+    all_edge = util.read_edge(edge_file)
+    edge_x = np.zeros(num_edge)
+    edge_y = np.zeros(num_edge)
+
+    for edge in all_edge:
+        edge_x[edge.id] = edge.x
+        edge_y[edge.id] = edge.y
+
+    imgs = []
+
+    # アニメーションの準備
+    for t in range(0, simulation_time, time_step):
+        # 各タイムステップにおけるクライアントの座標を格納
+        x1_list = []
+        y1_list = []
+
+        for id in range(num_client):
+            data = data_set.pop(0)
+
+            x1_list.append(data.x)
+            y1_list.append(data.y)
+
+        # 各タイムステップにおける描画情報の作成
+        my_title = wind1.text((max_x-min_x)/2 - 0.8, 13, 'time : {}'.format(t))
+        img1_client = wind1.scatter(x1_list, y1_list, c="black")
+        img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+
+        img_list = [my_title, img1_client, img1_edge]
+
+        imgs.append(img_list)
+
+    # アニメーションの作成
+    ani = animation.ArtistAnimation(fig, imgs, interval=1)
+
+    # アニメーションの出力
+    # fps は1~50までしかとれない
+    ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
+
+
 # 2×2のウィンドウで3種類のトピックを持つアニメーションの生成
-def create_animation(index_file, out_file, FPS):
+def create_topic_animation(index_file, out_file, FPS):
     # インデックスファイルの読み込み
     df_index = pd.read_csv(index_file, index_col=0)
 
@@ -130,9 +203,96 @@ def create_animation(index_file, out_file, FPS):
     ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
 
 
+# pub/sub関係を含む情報のアニメーション化(シングルトピック)
+def create_single_topic_animation(index_file, out_file, FPS=20):
+    # インデックスファイルの読み込み
+    df_index = pd.read_csv(index_file, index_col=0)
+
+    config_file = df_index.at['data', 'config_file']
+    data_file = df_index.at['data', 'assign_file']
+    edge_file = df_index.at['data', 'edge_file']
+
+    # 設定ファイルからパラメーター情報の取り出し
+    parameter = util.read_config(config_file)
+
+    min_x = parameter['min_x']
+    max_x = parameter['max_x']
+    min_y = parameter['min_y']
+    max_y = parameter['max_y']
+    num_edge = parameter['num_edge']
+    num_client = parameter['num_client']
+    num_topic = parameter['num_topic']
+    simulation_time = parameter['simulation_time']
+    time_step = parameter['time_step']
+
+    # トラッキングデータの読み込み
+    data_set = util.read_data_set_topic(data_file, num_topic)
+
+    # 描画領域の設定
+    fig = plt.figure()
+    wind1 = fig.add_subplot(1, 1, 1)
+    wind1.grid()
+    wind1.set_xlim(min_x, max_x)
+    wind1.set_ylim(min_y, max_y)
+    wind1.set_xticks(np.arange(min_x, max_x+1, (max_x-min_x)/3))
+    wind1.set_yticks(np.arange(min_y, max_y+1, (max_y-min_y)/3))
+
+    # エッジサーバの作成
+    all_edge = util.read_edge(edge_file)
+    edge_x = np.zeros(num_edge)
+    edge_y = np.zeros(num_edge)
+
+    for edge in all_edge:
+        edge_x[edge.id] = edge.x
+        edge_y[edge.id] = edge.y
+
+    imgs = []
+
+    # アニメーションの準備
+    for t in range(0, simulation_time, time_step):
+        # publisher/subsciber の分布
+        pub_x_list = [[] for i in range(1)]
+        pub_y_list = [[] for i in range(1)]
+        sub_x_list = [[] for i in range(1)]
+        sub_y_list = [[] for i in range(1)]
+        pub_sub_x_list = [[] for i in range(1)]
+        pub_sub_y_list = [[] for i in range(1)]
+
+        for id in range(num_client):
+            data = data_set.pop(0)
+
+            if data.pub_topic[0] == True and data.sub_topic[0] == True:
+                pub_sub_x_list[0].append(data.x)
+                pub_sub_y_list[0].append(data.y)
+            elif data.pub_topic[0] == True:
+                pub_x_list[0].append(data.x)
+                pub_y_list[0].append(data.y)
+            elif data.sub_topic[0] == True:
+                sub_x_list[0].append(data.x)
+                sub_y_list[0].append(data.y)
+
+        # 各タイムステップにおける描画情報の作成
+        my_title = wind1.text((max_x-min_x)/2 - 0.8, 13, 'time : {}'.format(t))
+        img1_pub = wind1.scatter(pub_x_list[0], pub_y_list[0], c="red")
+        img1_sub = wind1.scatter(sub_x_list[0], sub_y_list[0], c="blue")
+        img1_pub_sub = wind1.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
+        img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+
+        img_list = [my_title, img1_pub, img1_sub, img1_pub_sub, img1_edge]
+
+        imgs.append(img_list)
+
+    # アニメーションの作成
+    ani = animation.ArtistAnimation(fig, imgs, interval=1)
+
+    # アニメーションの出力
+    # fps は1~50までしかとれない
+    ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
+
+
 # 割り当て付きの分布の可視化
 # 要改修
-def create_animation_single_topic(index_file, out_file, FPS):
+def create_single_assign_animation(index_file, out_file, FPS):
     df_index = pd.read_csv(index_file, index_col=0)
 
     config_file = df_index.at['data', 'config_file']
@@ -232,165 +392,5 @@ def create_animation_single_topic(index_file, out_file, FPS):
 
     ani = animation.ArtistAnimation(fig, imgs, interval=1)
 
-    # fps は1~50までしかとれない
-    ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
-
-
-# トラッキング情報のアニメーション化
-def create_traking_animation(index_file, out_file, FPS=20):
-    # インデックスファイルの読み込み
-    df_index = pd.read_csv(index_file, index_col=0)
-
-    config_file = df_index.at['data', 'config_file']
-    data_file = df_index.at['data', 'traking_file']
-    edge_file = df_index.at['data', 'edge_file']
-
-    # 設定ファイルからパラメーター情報の取り出し
-    parameter = util.read_config(config_file)
-
-    min_x = parameter['min_x']
-    max_x = parameter['max_x']
-    min_y = parameter['min_y']
-    max_y = parameter['max_y']
-    num_edge = parameter['num_edge']
-    num_client = parameter['num_client']
-    simulation_time = parameter['simulation_time']
-    time_step = parameter['time_step']
-
-    # トラッキングデータの読み込み
-    data_set = util.read_data_set_traking(data_file)
-
-    # 描画領域の設定
-    fig = plt.figure()
-    wind1 = fig.add_subplot(1, 1, 1)
-    wind1.grid()
-    wind1.set_xlim(min_x, max_x)
-    wind1.set_ylim(min_y, max_y)
-    wind1.set_xticks(np.arange(min_x, max_x+1, (max_x-min_x)/3))
-    wind1.set_yticks(np.arange(min_y, max_y+1, (max_y-min_y)/3))
-
-    # エッジサーバの作成
-    all_edge = util.read_edge(edge_file)
-    edge_x = np.zeros(num_edge)
-    edge_y = np.zeros(num_edge)
-
-    for edge in all_edge:
-        edge_x[edge.id] = edge.x
-        edge_y[edge.id] = edge.y
-
-    imgs = []
-
-    # アニメーションの準備
-    for t in range(0, simulation_time, time_step):
-        # 各タイムステップにおけるクライアントの座標を格納
-        x1_list = []
-        y1_list = []
-
-        for id in range(num_client):
-            data = data_set.pop(0)
-
-            x1_list.append(data.x)
-            y1_list.append(data.y)
-
-        # 各タイムステップにおける描画情報の作成
-        my_title = wind1.text((max_x-min_x)/2 - 0.8, 13, 'time : {}'.format(t))
-        img1_client = wind1.scatter(x1_list, y1_list, c="black")
-        img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
-
-        img_list = [my_title, img1_client, img1_edge]
-
-        imgs.append(img_list)
-
-    # アニメーションの作成
-    ani = animation.ArtistAnimation(fig, imgs, interval=1)
-
-    # アニメーションの出力
-    # fps は1~50までしかとれない
-    ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
-
-
-# pub/sub関係を含む情報のアニメーション化(シングルトピック)
-def create_assign_animation(index_file, out_file, FPS=20):
-    # インデックスファイルの読み込み
-    df_index = pd.read_csv(index_file, index_col=0)
-
-    config_file = df_index.at['data', 'config_file']
-    data_file = df_index.at['data', 'assign_file']
-    edge_file = df_index.at['data', 'edge_file']
-
-    # 設定ファイルからパラメーター情報の取り出し
-    parameter = util.read_config(config_file)
-
-    min_x = parameter['min_x']
-    max_x = parameter['max_x']
-    min_y = parameter['min_y']
-    max_y = parameter['max_y']
-    num_edge = parameter['num_edge']
-    num_client = parameter['num_client']
-    num_topic = parameter['num_topic']
-    simulation_time = parameter['simulation_time']
-    time_step = parameter['time_step']
-
-    # トラッキングデータの読み込み
-    data_set = util.read_data_set_topic(data_file, num_topic)
-
-    # 描画領域の設定
-    fig = plt.figure()
-    wind1 = fig.add_subplot(1, 1, 1)
-    wind1.grid()
-    wind1.set_xlim(min_x, max_x)
-    wind1.set_ylim(min_y, max_y)
-    wind1.set_xticks(np.arange(min_x, max_x+1, (max_x-min_x)/3))
-    wind1.set_yticks(np.arange(min_y, max_y+1, (max_y-min_y)/3))
-
-    # エッジサーバの作成
-    all_edge = util.read_edge(edge_file)
-    edge_x = np.zeros(num_edge)
-    edge_y = np.zeros(num_edge)
-
-    for edge in all_edge:
-        edge_x[edge.id] = edge.x
-        edge_y[edge.id] = edge.y
-
-    imgs = []
-
-    # アニメーションの準備
-    for t in range(0, simulation_time, time_step):
-        # publisher/subsciber の分布
-        pub_x_list = [[] for i in range(1)]
-        pub_y_list = [[] for i in range(1)]
-        sub_x_list = [[] for i in range(1)]
-        sub_y_list = [[] for i in range(1)]
-        pub_sub_x_list = [[] for i in range(1)]
-        pub_sub_y_list = [[] for i in range(1)]
-
-        for id in range(num_client):
-            data = data_set.pop(0)
-
-            if data.pub_topic[0] == True and data.sub_topic[0] == True:
-                pub_sub_x_list[0].append(data.x)
-                pub_sub_y_list[0].append(data.y)
-            elif data.pub_topic[0] == True:
-                pub_x_list[0].append(data.x)
-                pub_y_list[0].append(data.y)
-            elif data.sub_topic[0] == True:
-                sub_x_list[0].append(data.x)
-                sub_y_list[0].append(data.y)
-
-        # 各タイムステップにおける描画情報の作成
-        my_title = wind1.text((max_x-min_x)/2 - 0.8, 13, 'time : {}'.format(t))
-        img1_pub = wind1.scatter(pub_x_list[0], pub_y_list[0], c="red")
-        img1_sub = wind1.scatter(sub_x_list[0], sub_y_list[0], c="blue")
-        img1_pub_sub = wind1.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
-        img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
-
-        img_list = [my_title, img1_pub, img1_sub, img1_pub_sub, img1_edge]
-
-        imgs.append(img_list)
-
-    # アニメーションの作成
-    ani = animation.ArtistAnimation(fig, imgs, interval=1)
-
-    # アニメーションの出力
     # fps は1~50までしかとれない
     ani.save(out_file, writer=animation.PillowWriter(fps=FPS))

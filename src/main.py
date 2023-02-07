@@ -23,7 +23,7 @@ assignTopic(index_file, assign_file)
 
 create_traking_animation(index_file, animation_file1, 20)
 
-create_animation(index_file, animation_file2, 20)
+create_topic_animation(index_file, animation_file2, 20)
 
 
 """
