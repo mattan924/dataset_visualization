@@ -29,12 +29,14 @@ def read_config(path):
     num_edge = int(f.readline().split(",")[1])
     volume = int(f.readline().split(",")[1])
     cpu_power = int(f.readline().split(",")[1])
+    cloud_time = int(f.readline().split(",")[1])
+    cloud_cycle = int(f.readline().split(",")[1])
     save_period = int(f.readline().split(",")[1])
     speed = int(f.readline().split(",")[1])
 
     parameter = { 'min_x' : min_x, 'max_x' : max_x, 'min_y' : min_y, 'max_y' : max_y, 'simulation_time' : simulation_time, 'time_step' : time_step}
     parameter1 = { 'num_client' : num_client, 'num_topic' : num_topic, 'num_edge' : num_edge}
-    parameter2 = { 'volume' : volume, 'cpu_power' : cpu_power, 'save_period' : save_period, 'speed' : speed}
+    parameter2 = { 'volume' : volume, 'cpu_power' : cpu_power, 'cloud_time' : cloud_time, 'cloud_cycle' : cloud_cycle, 'save_period' : save_period, 'speed' : speed}
 
     parameter.update(parameter1)
     parameter.update(parameter2)

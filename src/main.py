@@ -4,14 +4,13 @@ from util import *
 from solve import solve_near_edge
 
 
-index_file = "../dataset/data/index/test.csv"
-config_file = "../dataset/config/test.csv"
-traking_file = "../dataset/data/traking/test.csv"
-assign_file = "../dataset/data/assign/test.csv"
-edge_file = "../dataset/data/edge/test.csv"
-topic_file = "../dataset/data/topic/test.csv"
-animation_file1 = "../dataset/animation/traking.gif"
-animation_file2 = "../dataset/animation/assign_traking.gif"
+index_file = "../../reinforcement_learning/dataset/learning_data/index/index_test.csv"
+config_file = "../../reinforcement_learning/dataset/learning_data/config/config_test.csv"
+traking_file = "../../reinforcement_learning/dataset/learning_data/traking/traking_test.csv"
+assign_file = "../../reinforcement_learning/dataset/learning_data/assign/assign_test.csv"
+edge_file = "../../reinforcement_learning/dataset/learning_data/edge/edge_test.csv"
+topic_file = "../../reinforcement_learning/dataset/learning_data/topic/topic_test.csv"
+animation_file = "../../reinforcement_learning/dataset/learning_data/animation/animation_test.gif"
 
 generate_traking(index_file, config_file, traking_file)
 
@@ -21,9 +20,7 @@ generate_topic(index_file, config_file, topic_file)
 
 assignTopic(index_file, assign_file)
 
-create_traking_animation(index_file, animation_file1, 20)
-
-create_topic_animation(index_file, animation_file2, 20)
+create_single_topic_animation(index_file, animation_file, 20)
 
 
 """
