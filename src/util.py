@@ -11,8 +11,8 @@ from topic import Topic_uniform, Topic_local, Topic_incident
  
 def create_index_file(index_file, config_file):
     with open(index_file, mode='w') as f:
-        f.write(",config_file,edge_file,topic_file,traking_file,traking_seed,assign_file,assign_seed,solve_file\n")
-        f.write("data," + config_file + ",,,,,,,")
+        f.write(",config_file,edge_file,topic_file,traking_file,traking_seed,assign_file,assign_seed,solve_file,opt\n")
+        f.write("data," + config_file + ",,,,,,,,")
 
 # 設定ファイルの読み込み
 def read_config(path):
