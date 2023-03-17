@@ -335,33 +335,42 @@ def create_single_assign_animation(index_file, out_file, FPS):
 
     for t in range(0, simulation_time, time_step):
         # 各タイムステップにおけるクライアントの座標を格納
-        x1_list = []
-        y1_list = []
+        pub_x_list = [[] for i in range(1)]
+        pub_y_list = [[] for i in range(1)]
+        sub_x_list = [[] for i in range(1)]
+        sub_y_list = [[] for i in range(1)]
+        pub_sub_x_list = [[] for i in range(1)]
+        pub_sub_y_list = [[] for i in range(1)]
         line_list = []
-        pub_list = []
-        sub_list = []
 
         for id in range(num_client):
             data = data_set.pop(0)
 
             # 実際に使う時には要修正
-            for i in range(num_topic):
-                edge_id = data.pub_edge[i]
-                if edge_id != -1:
-                    x1_list.append(data.x)
-                    y1_list.append(data.y)
+            for n in range(num_topic):
+                if data.pub_edge[n] != -1 and data.sub_edge != -1:
+                    pub_sub_x_list[n].append(data.x)
+                    pub_sub_y_list[n].append(data.y)
                     
-                    client = Client(data.id, data.x, data.y, edge_id, edge_id)
-                    pub_list.append(client)
-                    sub_list.append(client)
+                    line_list.append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y)])
+                elif data.pub_edge[n] != -1:
+                    pub_x_list[n].append(data.x)
+                    pub_y_list[n].append(data.y)
 
-                    line_list.append([(data.x, data.y), (all_edge[edge_id].x, all_edge[edge_id].y)])
+                    line_list.append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y)])
+                else:
+                    sub_x_list[n].append(data.x)
+                    sub_y_list[n].append(data.y)
+
+                    line_list.append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y)])
 
         my_title = wind1.text(5.5, 13, 'time : {}'.format(t))
-        img1_client = wind1.scatter(x1_list, y1_list, c="blue")
-        img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img_publisher = wind1.scatter(pub_x_list[n], pub_y_list[n], c="red")
+        img_subscriber = wind1.scatter(sub_x_list[n], sub_y_list[n], c="blue")
+        img_pub_sub = wind1.scatter(pub_sub_x_list[n], pub_sub_y_list[n], c="purple")
+        img_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
 
-        img_list = [my_title, img1_client, img1_edge]
+        img_list = [my_title, img_publisher, img_subscriber, img_pub_sub, img_edge]
 
         for line in line_list:
             img_list.extend(wind1.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color="k"))
