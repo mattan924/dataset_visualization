@@ -315,14 +315,10 @@ def create_single_assign_animation(index_file, out_file, FPS):
 
     # 描画領域の設定
     fig = plt.figure()
-    wind1 = fig.add_subplot(1, 2, 1)
-    wind2 = fig.add_subplot(1, 2, 2)
+    wind1 = fig.add_subplot(1, 1, 1)
     wind1.grid()
-    wind2.grid()
     wind1.set_xlim(min_x, max_x)
     wind1.set_ylim(min_y, max_y)
-    wind2.set_xlim(0, simulation_time)
-    wind2.set_ylim(0.8, 1.5)
     wind1.set_xticks(np.arange(0, 13, 4))
     wind1.set_yticks(np.arange(0, 13, 4))
 
@@ -336,7 +332,6 @@ def create_single_assign_animation(index_file, out_file, FPS):
         edge_y[edge.id] = edge.y
 
     imgs = []
-    delay_history = []
 
     for t in range(0, simulation_time, time_step):
         # 各タイムステップにおけるクライアントの座標を格納
@@ -362,28 +357,11 @@ def create_single_assign_animation(index_file, out_file, FPS):
 
                     line_list.append([(data.x, data.y), (all_edge[edge_id].x, all_edge[edge_id].y)])
 
-        delay = 0
-        tmp = 0
-        for i in range(num_topic):
-            for c1 in pub_list:
-                for c2 in sub_list:
-                    delay += util.cal_delay(c1, c2, all_edge)
-                    tmp += 1
-  
-        delay_history.append(delay/tmp)
-
-        time = [i for i in range(0, t+1, time_step)]
-
-        my_title = wind1.text(11.5, 13, 'time : {}'.format(t))
+        my_title = wind1.text(5.5, 13, 'time : {}'.format(t))
         img1_client = wind1.scatter(x1_list, y1_list, c="blue")
         img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
 
         img_list = [my_title, img1_client, img1_edge]
-
-        img2 = wind2.plot(time, delay_history, marker="o", color="k")
-
-        img_list.extend(img2)
-
 
         for line in line_list:
             img_list.extend(wind1.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color="k"))

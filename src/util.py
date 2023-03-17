@@ -163,12 +163,10 @@ def read_data_set_solution(data_path, config_path):
         y = float(l.pop(0))
 
         pub_edge = []
-        for t in l[:num_topic]:
-            pub_edge.append(int(t))
+        for i in range(num_topic):
+            pub_edge.append(int(float(l.pop(0))))
 
-        sub_edge = []
-        for t in l[num_topic:]:
-            sub_edge.append(int(t))
+        sub_edge = int(float(l.pop(0)))
 
         data_solution = Data_solution(id, time, x, y, pub_edge, sub_edge)
 
@@ -211,8 +209,7 @@ def writeSolutionCSV(filename, id, time, x, y, pub_edge, sub_edge, num_topic):
     for i in range(num_topic):
         file.write(f",{pub_edge[i]}")
 
-    for i in range(num_topic):
-        file.write(f",{sub_edge[i]}")
+    file.write(f",{sub_edge}")
 
     file.write("\n")
 
