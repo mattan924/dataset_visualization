@@ -352,17 +352,21 @@ def create_single_assign_animation(index_file, out_file, FPS):
                     pub_sub_x_list[n].append(data.x)
                     pub_sub_y_list[n].append(data.y)
                     
-                    line_list.append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y)])
+                    if data.pub_edge[n] == data.sub_edge:
+                        line_list.append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "purple"])
+                    else:
+                        line_list.append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
+                        line_list.append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
                 elif data.pub_edge[n] != -1:
                     pub_x_list[n].append(data.x)
                     pub_y_list[n].append(data.y)
 
-                    line_list.append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y)])
+                    line_list.append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
                 else:
                     sub_x_list[n].append(data.x)
                     sub_y_list[n].append(data.y)
 
-                    line_list.append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y)])
+                    line_list.append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
 
         my_title = wind1.text(5.5, 13, 'time : {}'.format(t))
         img_publisher = wind1.scatter(pub_x_list[n], pub_y_list[n], c="red")
@@ -373,7 +377,7 @@ def create_single_assign_animation(index_file, out_file, FPS):
         img_list = [my_title, img_publisher, img_subscriber, img_pub_sub, img_edge]
 
         for line in line_list:
-            img_list.extend(wind1.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color="k"))
+            img_list.extend(wind1.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color=line[2]))
 
         imgs.append(img_list)
 
