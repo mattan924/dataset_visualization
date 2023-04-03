@@ -2,6 +2,8 @@ import util
 import math
 import pandas as pd
 
+
+#  2点間の距離を計算する関数
 def cal_distance(x1, y1, x2, y2):
     distance = math.sqrt(pow(x1-x2,2)+pow(y1-y2,2))
 

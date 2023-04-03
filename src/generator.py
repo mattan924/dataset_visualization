@@ -71,7 +71,7 @@ def generate_traking(index_file, config_file, out_file, seed=0):
             util.writeTrakingCSV(out_file, Data_traking(c.id, time, c.x, c.y))
 
 
-# トラッキングデータにトピックを割り当てる
+# トラッキングデータに pub/sub 関係を割り当てる
 def assignTopic(index_file, out_file, seed=0):
     # インデックスファイルが存在しない場合
     if not os.path.exists(index_file):
@@ -119,7 +119,7 @@ def assignTopic(index_file, out_file, seed=0):
 
         all_client = []
 
-        # トラッキングデータに対してトピックを割り当てる
+        # トラッキングデータに対して pub/sub 関係を割り当てる
         for i in range(num_client):
             data_traking = data_set_traking.pop(0)
 
@@ -127,6 +127,7 @@ def assignTopic(index_file, out_file, seed=0):
             init_pub_topic = np.zeros(num_topic)
             init_sub_topic = np.zeros(num_topic)
 
+            #  必ず pub/sub のどちらかはTrue
             flag = True
             while(flag):
                 for t in all_topic:
@@ -144,7 +145,7 @@ def assignTopic(index_file, out_file, seed=0):
 
             util.writeAssginCSV(out_file, Data_topic(c_topic.id, 0, c_topic.x, c_topic.y, c_topic.pub_topic, c_topic.sub_topic))
 
-        # 時間を1ステップずつ進めにがら、トピックを割り当てる
+        # 時間を1ステップずつ進めにがら、pub/sub 関係を決める
         for time in range(time_step, simulation_time, time_step):
             # 突発的なトピックの更新
             for t in all_topic:
@@ -171,7 +172,6 @@ def generate_edge(index_file, config_file, out_file):
 
     # インデックスファイルの読み込み、更新
     df_index = pd.read_csv(index_file, index_col=0)
-    df_index.at['data', 'config_file'] = config_file
     df_index.at['data', 'edge_file'] = out_file
 
     df_index.to_csv(index_file)
@@ -204,7 +204,6 @@ def generate_topic(index_file, config_file, out_file):
 
     # インデックスファイルの読み込み、更新
     df_index = pd.read_csv(index_file, index_col=0)
-    df_index.at['data', 'config_file'] = config_file
     df_index.at['data', 'topic_file'] = out_file
 
     df_index.to_csv(index_file)
@@ -221,6 +220,7 @@ def generate_topic(index_file, config_file, out_file):
 
     all_topic = []
     # トピックの生成
+    #  作成したい topic に応じてここを変える
     for i in range(num_topic):
         t = Topic_uniform(i, save_period)
         all_topic.append(t)

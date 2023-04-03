@@ -4,6 +4,7 @@ import numpy as np
 import sys
 
 
+#  トラッキングデータを生成する際に使用する Client クラス
 class Client_traking:
     
     def __init__(self, id, x, y, speed):
@@ -53,6 +54,7 @@ class Client_traking:
         return self.x, self.y
 
 
+#  トラッキングデータにトピックを割り当てる際に使用する Client トピック
 class Client_topic:
     
     def __init__(self, id, x, y, pub_topic, sub_topic):
@@ -72,6 +74,7 @@ class Client_topic:
 
         # トピックごとの選択方法
         for t in all_topic:
+            #  pub/sub 関係が常に固定
             if t.role == 0:
                 """
                 if now_pub_topic[t.id] == 1 and random.uniform(0, 100) < 99.9:
@@ -86,13 +89,13 @@ class Client_topic:
                 """
                 self.pub_topic = now_pub_topic
                 self.sub_topic = now_sub_topic               
-
+            #  特定に範囲に入れば pub/sub
             elif t.role == 1:
                 distance = math.sqrt(pow(self.x - t.base_point[0], 2) + pow(self.y - t.base_point[1], 2))
                 if distance <= t.threshold:
                     self.pub_topic[t.id] = True
                     self.sub_topic[t.id] = True
-        
+            #  突発的に発生する領域に入れば pub/sub
             elif t.role == 2:       
                 for point in t.random_point:
                     rank = point.cal_rank(self.x, self.y)
