@@ -8,11 +8,13 @@ import numpy as np
 from edge import Edge
 from topic import Topic_uniform, Topic_local, Topic_incident
 
- 
+
+#  index ファイルの生成
 def create_index_file(index_file, config_file):
     with open(index_file, mode='w') as f:
         f.write(",config_file,edge_file,topic_file,traking_file,traking_seed,assign_file,assign_seed,solve_file,opt\n")
         f.write("data," + config_file + ",,,,,,,,")
+
 
 # 設定ファイルの読み込み
 def read_config(path):
@@ -44,6 +46,7 @@ def read_config(path):
     return parameter
 
 
+#  edge ファイルの読み込み
 def read_edge(path):
     df = pd.read_csv(path)
     num_edge = len(df.index)
@@ -63,6 +66,7 @@ def read_edge(path):
     return all_edge
 
 
+#  topic ファイルの読み取り
 def read_topic(path):
     df = pd.read_csv(path)
     num_topic = len(df.index)
@@ -146,6 +150,7 @@ def read_data_set_topic(path, num_topic):
     return data_set_topic
 
 
+#  クライアントの割り当て情報の読み込み
 def read_data_set_solution(data_path, config_path):
     parameter = read_config(config_path)
 
@@ -201,6 +206,7 @@ def writeAssginCSV(filename, data_topic):
     file.close()
 
 
+#  クライアントの割り当て情報を一行追記
 def writeSolutionCSV(filename, id, time, x, y, pub_edge, sub_edge, num_topic):
     file = open(filename, "a")
 
@@ -216,6 +222,7 @@ def writeSolutionCSV(filename, id, time, x, y, pub_edge, sub_edge, num_topic):
     file.close()
 
 
+#  edge の情報を書き出し
 def writeEdgeCSV(filename, all_edge):
     file = open(filename, "w")
 
@@ -227,6 +234,7 @@ def writeEdgeCSV(filename, all_edge):
     file.close()
 
 
+#  topic の情報を書き出し
 def writeTopicCSV(filename, all_topic):
     file = open(filename, "w")
 
@@ -254,22 +262,8 @@ def init_point(min_x, max_x, min_y, max_y):
     return x, y
 
 
+#  2点間の距離を測る
 def cal_distance(x1, y1, x2, y2):
     distance = math.sqrt(pow(x1-x2,2)+pow(y1-y2,2))
 
     return distance
-
-
-def cal_delay(client1, client2, all_edge):
-    delay = 0
-
-    pub_edge = all_edge[client1.pub_edge_id]
-    sub_edge = all_edge[client2.sub_edge_id]
-
-    delay += cal_distance(client1.x, client2.y, pub_edge.x, pub_edge.y)*0.1
-
-    delay += cal_distance(pub_edge.x, pub_edge.y, sub_edge.x, sub_edge.y)*0.1
-
-    delay += cal_distance(sub_edge.x, sub_edge.y, client2.x, client2.y)*0.1
-
-    return delay
