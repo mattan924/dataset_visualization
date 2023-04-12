@@ -2,9 +2,6 @@ from abc import ABCMeta
 from abc import abstractclassmethod
 import math
 import random
-import sys
-import queue
-
 
 #  Topic クラスの抽象クラス
 class Topic(metaclass = ABCMeta):

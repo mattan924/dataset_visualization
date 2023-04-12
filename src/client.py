@@ -108,12 +108,3 @@ class Client_topic:
             
         return self.pub_topic, self.sub_topic  
     
-
-class Client:
-
-    def __init__(self, id, x, y, pub_edge_id, sub_edge_id):
-        self.id = id
-        self.x = x
-        self.y = y
-        self.pub_edge_id = pub_edge_id
-        self.sub_edge_id = sub_edge_id
