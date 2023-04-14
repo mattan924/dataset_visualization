@@ -1,5 +1,3 @@
-import numpy as np
-
 
 #  Edge サーバの情報を扱うためのクラス
 class Edge:
