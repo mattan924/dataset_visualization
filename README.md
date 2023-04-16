@@ -305,3 +305,65 @@ id = 0 の topic をid=3のエッジサーバに publish する場合では pub_
 
 ## topic.py
 
+### Topic クラス
+
+各 topic の抽象クラスで共通の属性、メソッドを定義しているクラスである。
+
+|      属性      |         説明           |
+| :-----------: | :--------------------: |
+|      id       |  topic 固有のID  |
+|  save_period  |  データをストレージに保存する期間 (s)  |
+| publish_rate  |   publish を行う間隔 (/s)     |
+|   data_size   | 1メッセージあたりのデータサイズ (MB) |
+| require_cycle | 1メッセージを処理するのに必要なクロック数  |
+
+__init__ メソッドにおいて publish_rate, data_size, require_cycle が None で与えられた場合、
+ランダムな値が設定される。publish_rate は 0.1~10 の値となり、data_size は 1~256 (これは MQTT の最大データサイズ)
+require_cycle は 1e4~1e5なる。
+
+init_topic は @abstractclassmethod デコレータと付けられており、topic クラスを継承する全てのクラスで実装する必要がる。
+このメソッドは、各クライアントが初期にその topic を pub/sub するのかを決定するためのメソッドある
+
+### Topic_uniform クラス
+
+このクラスはこの topic を pub/sub するクライアントが一様に分布するような特徴を持つ topic を扱うためのクラス
+
+|      属性      |         説明           |
+| :-----------: | :--------------------: |
+|      role       |  特徴を表すための属性  |
+
+この topic では Topic クラスで持つ属性の他に role 属性を持つ。これは各 topic がどの様な特徴を持つのかを表すためのものである。
+Topic_uniform クラスでは `role = 0` とする。
+
+Topic_uniform クラスでの init_topic メソッドはランダムに pub/sub を決定する。
+
+### Topic_local クラス
+
+このクラスはこの topic を pub/sub するクライアントが局所的な位置に分布する様な特徴を持つ topic を扱うためのクラス。
+
+|      属性      |         説明           |
+| :-----------: | :--------------------: |
+|     role     |  特徴を表すための属性  |
+|    radius    |  局所的な領域の半径 (km)  |
+|  base_point  |  局所的な領域の中心座標  |
+
+この topic では Topic クラスで持つ属性の他に role 属性を持つ。これは各 topic がどの様な特徴を持つのかを表すためのものである。
+Topic_uniform クラスでは `role = 1` とする。また、局所的な領域の中心座標と半径の情報を持つ。
+
+Topic_uniform クラスでの init_topic メソッドは領域の半径内にいるクライアントが該当 topic を pub/sub する。
+
+### Topic_incident クラス
+
+このクラスはこの topic を pub/sub するクライアントが局所的かつ突発的に発生する特徴を持つ topic を扱うためのクラス。
+
+|      属性      |         説明           |
+| :-----------: | :--------------------: |
+|      role      |  特徴を表すための属性  |
+|  random_point  |  局所的かつ突発的に発生する領域を保持するリスト  |
+
+この topic では Topic クラスで持つ属性の他に role 属性を持つ。これは各 topic がどの様な特徴を持つのかを表すためのものである。
+Topic_uniform クラスでは `role = 2` とする。また、局所的かつ突発的に発生する領域を保持するためのリストを持つ。
+
+Topic_incident クラスでの init_topic メソッドでは、誰も初期段階では pub/sub を行なわないようにしている。
+
+また decide_random_point メソッド
