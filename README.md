@@ -1,3 +1,5 @@
+![](https://img.shields.io/github/downloads/rarafy/OpenJTalkForUnity/total)
+
 # dataset_visualization
 
 ## 概要
@@ -366,4 +368,21 @@ Topic_uniform クラスでは `role = 2` とする。また、局所的かつ突
 
 Topic_incident クラスでの init_topic メソッドでは、誰も初期段階では pub/sub を行なわないようにしている。
 
-また decide_random_point メソッド
+また decide_random_point メソッドでは領域の更新を行う。具体的には、既存の領域の残り時間を減らし、新規に領域を生成するかを
+ランダムに決定する。最後に、領域の残り時間が 0 になったものは random_point リストから削除する。
+
+### Point クラス
+
+このクラスは Topic_incident クラスで扱う局所的かつ突発的に発生する領域の情報を扱うためのクラスである。
+
+|      属性      |         説明           |
+| :-----------: | :--------------------: |
+|     x     |  領域の中心の x 座標  |
+|     y    |  領域の中心の y 座標  |
+|  radius  |  領域の半径  |
+|  time  |  領域の残り時間 (s)  |
+
+このクラスは領域の位置と範囲の他に time という属性で領域の残り時間を保持している。 time が 0 以上の時領域が生成されており
+この範囲内に位置するクライアントが Topic_incident クラスで表現される topic を pub/sub することになる。
+
+time_advance メソッドでは
