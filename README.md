@@ -1,4 +1,3 @@
-![](https://img.shields.io/github/downloads/rarafy/OpenJTalkForUnity/total)
 
 # dataset_visualization
 
@@ -385,4 +384,47 @@ Topic_incident クラスでの init_topic メソッドでは、誰も初期段�
 このクラスは領域の位置と範囲の他に time という属性で領域の残り時間を保持している。 time が 0 以上の時領域が生成されており
 この範囲内に位置するクライアントが Topic_incident クラスで表現される topic を pub/sub することになる。
 
-time_advance メソッドでは
+`time_advance` メソッドでは引数として `advance_time` を受け取り、領域の残り時間を `advance_time` 分だけ減らす。
+
+`check_area` メソッドでは領域の範囲内にいるかチェックしたクライアントの座標を引数として `x, y` を与える。
+これにより、領域の範囲内にクライアントがいれば `True`, そうでなければ `False` を返す。
+
+## generator.py
+
+このファイルはトラッキングデータや pub/sub 関係付きのトラッキングデータ、エッジサーバ、 topic のデータを生成するための関数を記述しているファイルである。
+
+|      関数      |         機能           |
+| :-----------: | :--------------------: |
+|  generate_traking  |  トラッキングデータを生成する  |
+|   assignTopic    |  トラッキングデータに対して pub/sub 関係を付与する  |
+|  generate_edge  |  エッジサーバの情報を生成する  |
+|  generate_topic  |  topic の情報を生成する  |
+
+### generate_traking 関数
+
+|   引数   | パラメータ | デフォルト値 |            説明               |
+| :------: | :------: | :-------: | :-----------------------------: |
+| 第 1 引数 |  index_file |   無し   |    各種データを集約をするためのファイルのパス    |
+| 第 2 引数 | config_file |   無し   |    トラッキングデータを生成するための設定を記述するファイルのパス    |
+| 第 3 引数 |  out_file  |   無し   |    生成したトラッキングデータを記述するファイルのパス    |
+| 第 4 引数 |   seed   |   0   |    トラッキングデータを生成する際に使用する乱数のシード値    |
+
+この関数は上記の4つの引数の受け取りトラッキングデータを生成する。
+
+index_file とは config_file や edge_file, topic_file などのパスや各種情報を集約して管理するためのファイルである。
+`generate_traking` 関数では引数として与えられた `index_file` のパスが存在しない場合、与えられたパスにしたがって
+`index_file` を生成する. また、与えらた `seed` が 0 の場合ランダムにシード値を決定し、その値に基づいてトラッキングデータを生成する。
+
+トラッキングデータを生成する際に使用した `config_file`, `seed`, `out_file` は `index_file` に書き込まれ保存される。
+
+次に、与えれた `config_file` から各種設定を読み込む。具体的には下記の東リである。
+
+| 属性 | 値 |
+| :--: | :--: |
+| 'min_x' | x 座標の最小値 (km) |
+| 'max_x' | x 座標の最大値 (km) |
+| 'min_y' | y 座標の最小値 (km) |
+| 'max_y' | y 座標の最大値 (km) |
+| 'simulation_time' | 何秒分のデータを生成するか (s)|
+| 'time_step' | 何秒おきにデータを書き出すか (s)|
+| 'num_client' | モバイルクライアントの数 |
