@@ -72,11 +72,21 @@ def generate_traking(index_file, config_file, out_file, seed=0):
 
 
 # トラッキングデータに pub/sub 関係を割り当てる
-def assignTopic(index_file, out_file, seed=0):
+def assign_topic(index_file, out_file, seed=0):
     # インデックスファイルが存在しない場合
     if not os.path.exists(index_file):
         sys.exit("index_file is not exist. Create index_file in advance.")
     else:
+        # インデックスファイルを読み込み、更新する
+        df_index = pd.read_csv(index_file, index_col=0)
+
+        config_file = df_index.at['data', 'config_file']
+        traking_file = df_index.at['data', 'traking_file']
+        topic_file = df_index.at['data', 'topic_file']
+
+        if not os.path.exists(traking_file):
+            sys.exit("traking_file is not exist. Generate traking_file in advance.")
+
         # シード値をした場合
         if seed != 0:
             random.seed(seed)
@@ -85,14 +95,9 @@ def assignTopic(index_file, out_file, seed=0):
             seed = random.randint(1, 100000000)
             random.seed(seed)
         
-        # インデックスファイルを読み込み、更新する
-        df_index = pd.read_csv(index_file, index_col=0)
+        
         df_index.at['data', 'assign_file'] = out_file
         df_index.at['data', 'assign_seed'] = seed
-
-        config_file = df_index.at['data', 'config_file']
-        traking_file = df_index.at['data', 'traking_file']
-        topic_file = df_index.at['data', 'topic_file']
 
         df_index.to_csv(index_file)
 
