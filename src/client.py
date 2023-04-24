@@ -5,7 +5,7 @@ import sys
 
 
 #  トラッキングデータを生成する際に使用する Client クラス
-class Client_traking:
+class ClientTraking:
     
     def __init__(self, id, x, y, speed):
         self.id = id
@@ -55,7 +55,7 @@ class Client_traking:
 
 
 #  トラッキングデータにトピックを割り当てる際に使用する Client トピック
-class Client_topic:
+class ClientTopic:
     
     def __init__(self, id, x, y, pub_topic, sub_topic):
         self.id = id

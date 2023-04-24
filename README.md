@@ -77,6 +77,8 @@
 | 'num_edge' | エッジサーバの数 |
 | 'volume' | エッジサーバのストレージ容量 (Mbyte) |
 | 'cpu_cycle' | エッジサーバのCPU周波数 (Hz) |
+| 'cloud_time' | クラウドまでの通信遅延 (ms) |
+| 'cloud_cycle' | クラウドの cpu 周波数 (Hz) |
 | 'save_period' | データがエッジサーバに保存される時間 (s) |
 | 'speed' | モバイルクライアントの平均移動時速 (km/h) |
 
@@ -177,7 +179,7 @@ animation.py の create_topic_animation(index_file, out_file, FPS) という関�
 
 トラッキングデータ、pub/sub 関係の割り当てにおいてクライアントの情報を扱うためのクラスを記述しているファイル。
 
-#### Client_traking クラス
+#### ClientTraking クラス
 
 トラッキングデータを生成するためのクラス。このクラスでは下記の属性を持つ
 
@@ -204,7 +206,7 @@ animation.py の create_topic_animation(index_file, out_file, FPS) という関�
 座標の決め方は、乱数を用いて現在の進行方向を元に次に進む向きを決定し、その向きに対してどれだけ進むかを現在の速度を元に決定する。
 また、メソッドが呼ばれるたびに現在の速度を平均、標準偏差を10としたガウス分布をもちに次の速度を決定している。
 
-#### Client_topic クラス
+#### ClientTopic クラス
 
 トラッキングデータに pub/sub 関係を割り当てるために使用するクラス。このクラスでは下記の属性を持つ
 
@@ -230,7 +232,7 @@ topic を publish, subscribe を行うのかを決定する。また新しい to
 
 生成した各種データを扱うためのクラスを記述しているファイル
 
-#### Data_traking クラス
+#### DataTraking クラス
 
 トラッキングデータを扱うためのクラス
 
@@ -244,7 +246,7 @@ topic を publish, subscribe を行うのかを決定する。また新しい to
 このクラスは、トラッキングデータを保存するファイルで一行に書き込まれる情報に対応する。すなわち
 クライアント i が時刻 t に (x, y) にいることを一つのインスタンスとして扱うものである。
 
-### Data_topic クラス
+### DataTopic クラス
 
 pub/sub 関係付きトラッキングデータを扱うためのクラス
 
@@ -264,7 +266,7 @@ pub/sub 関係付きトラッキングデータを扱うためのクラス
 また、pub_topic, sub_topic はともに長さが topic の数である numpy 配列であり、id=0のtopicをpublishする場合
 pub_topic[0] = True (1) となる。sub_topic についても同様である。
 
-### Data_solution クラス
+### DataSolution クラス
 
 各 topic のデータをどのエッジサーバに対して publish/subscribe するのかのトラッキングデータを扱うクラス
 
@@ -325,7 +327,7 @@ require_cycle は 1e4~1e5なる。
 init_topic は @abstractclassmethod デコレータと付けられており、topic クラスを継承する全てのクラスで実装する必要がる。
 このメソッドは、各クライアントが初期にその topic を pub/sub するのかを決定するためのメソッドある
 
-### Topic_uniform クラス
+### TopicUniform クラス
 
 このクラスはこの topic を pub/sub するクライアントが一様に分布するような特徴を持つ topic を扱うためのクラス
 
@@ -338,7 +340,7 @@ Topic_uniform クラスでは `role = 0` とする。
 
 Topic_uniform クラスでの init_topic メソッドはランダムに pub/sub を決定する。
 
-### Topic_local クラス
+### TopicLocal クラス
 
 このクラスはこの topic を pub/sub するクライアントが局所的な位置に分布する様な特徴を持つ topic を扱うためのクラス。
 
@@ -353,7 +355,7 @@ Topic_uniform クラスでは `role = 1` とする。また、局所的な領域
 
 Topic_uniform クラスでの init_topic メソッドは領域の半径内にいるクライアントが該当 topic を pub/sub する。
 
-### Topic_incident クラス
+### TopicIncident クラス
 
 このクラスはこの topic を pub/sub するクライアントが局所的かつ突発的に発生する特徴を持つ topic を扱うためのクラス。
 
@@ -530,3 +532,52 @@ pub/sub 関係を割り付ける際に使用した `seed`値と出力先ファ�
 コード中で使用する topic のクラスを変更することで対応できる。
 
 最後に生成した topic のデータを出力先ファイルである `out_file` に書き出す。
+
+## util.py
+
+このファイルは各ファイルで使用する関数をまとめたもので、主に各種ファイルの読み込み・書き込みを行う。
+
+|      関数      |         機能           |
+| :-----------: | :--------------------: |
+|  create_index_file  |  `index_file` を生成する  |
+|   read_config    |  `config_file` を読み込みパラメーターを取得する  |
+|  read_edge  |  `edge_file` を読み込み、エッジサーバの情報を取得する  |
+|  read_topic  |  `topic_file` を読み込み、topic の情報を取得する |
+|  read_data_set_traking  |  トラッキングデータを読み込む  |
+|  read_data_set_topic  |  pub/sub 関係付きのトラッキングデータを読み込む  |
+|  read_data_set_solution  |  エッジサーバに対するクライアント割り当て付きトラッキング　|
+|  write_traking_csv  |  トラッキングデータをファイルに書き込む  |
+|  write_assign_csv  |  pub/sub 関係付きトラッキングデータをファイルに書き込む  |
+|  write_solution_csv  |  エッジサーバに対するクライアント割り当て付きトラッキングデータをファイルに書き込む  |
+|  write_edge_csv  |  エッジサーバの情報をファイルに書き込む  |
+|  write_topic_csv  |  topic の情報をファイルに書き込む  |
+|  init_point  |  クライアントの初期位置を決定する  |
+|  cal_distance  |  2点間の距離を計算する  |
+
+### create_index_file 関数
+
+### read_config 関数
+
+### read_edge 関数
+
+### read_topic 関数
+
+### read_data_set_traking 関数
+
+### read_data_set_topic 関数
+
+### read_data_set_solution 関数
+
+### write_traking_csv 関数
+
+### write_assign_csv 関数
+
+### write_solution_csv 関数
+
+### write_edge_csv 関数
+
+### write_topic_csv 関数
+
+### init_point 関数
+
+### cal_distance 関数

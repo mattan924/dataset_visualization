@@ -1,4 +1,4 @@
-from data import Data_topic, Data_traking, Data_solution
+from data import DataTopic, DataTraking, DataSolution
 import random
 import math
 import sys
@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 
 from edge import Edge
-from topic import Topic_uniform, Topic_local, Topic_incident
+from topic import TopicUniform, TopicLocal, TopicIncident
 
 
 #  index ファイルの生成
@@ -30,7 +30,7 @@ def read_config(path):
     num_topic = int(f.readline().split(",")[1])
     num_edge = int(f.readline().split(",")[1])
     volume = int(f.readline().split(",")[1])
-    cpu_power = int(f.readline().split(",")[1])
+    cpu_cycle = int(f.readline().split(",")[1])
     cloud_time = int(f.readline().split(",")[1])
     cloud_cycle = int(f.readline().split(",")[1])
     save_period = int(f.readline().split(",")[1])
@@ -38,7 +38,7 @@ def read_config(path):
 
     parameter = { 'min_x' : min_x, 'max_x' : max_x, 'min_y' : min_y, 'max_y' : max_y, 'simulation_time' : simulation_time, 'time_step' : time_step}
     parameter1 = { 'num_client' : num_client, 'num_topic' : num_topic, 'num_edge' : num_edge}
-    parameter2 = { 'volume' : volume, 'cpu_power' : cpu_power, 'cloud_time' : cloud_time, 'cloud_cycle' : cloud_cycle, 'save_period' : save_period, 'speed' : speed}
+    parameter2 = { 'volume' : volume, 'cpu_power' : cpu_cycle, 'cloud_time' : cloud_time, 'cloud_cycle' : cloud_cycle, 'save_period' : save_period, 'speed' : speed}
 
     parameter.update(parameter1)
     parameter.update(parameter2)
@@ -84,11 +84,11 @@ def read_topic(path):
         base_y = data['base_y']
 
         if role == 0:
-            topic = Topic_uniform(id, save_period, publish_rate=publish_rate, data_size=data_size, require_cycle=require_cycle)
+            topic = TopicUniform(id, save_period, publish_rate=publish_rate, data_size=data_size, require_cycle=require_cycle)
         elif role == 1:
-            topic = Topic_local(id, save_period, publish_rate=publish_rate, data_size=data_size, require_cycle=require_cycle, base_point=(base_x, base_y))
+            topic = TopicLocal(id, save_period, publish_rate=publish_rate, data_size=data_size, require_cycle=require_cycle, base_point=(base_x, base_y))
         elif role == 2:
-            topic = Topic_incident(id, save_period, publish_rate=publish_rate, data_size=data_size, require_cycle=require_cycle)
+            topic = TopicIncident(id, save_period, publish_rate=publish_rate, data_size=data_size, require_cycle=require_cycle)
         else:
             sys.exit("追加されていない role です。関数 read_topic を修正して下さい")
 
@@ -111,7 +111,7 @@ def read_data_set_traking(path):
         x = float(data['x'])
         y = float(data['y'])
 
-        data_traking = Data_traking(id, time, x, y)
+        data_traking = DataTraking(id, time, x, y)
 
         data_set_traking.append(data_traking)
 
@@ -143,7 +143,7 @@ def read_data_set_topic(path, num_topic):
             if tmp == True:
                 sub_topic[i] = True
                 
-        data_topic = Data_topic(id, time, x, y, pub_topic, sub_topic)
+        data_topic = DataTopic(id, time, x, y, pub_topic, sub_topic)
 
         data_set_topic.append(data_topic)
 
@@ -173,7 +173,7 @@ def read_data_set_solution(data_path, config_path):
 
         sub_edge = int(float(l.pop(0)))
 
-        data_solution = Data_solution(id, time, x, y, pub_edge, sub_edge)
+        data_solution = DataSolution(id, time, x, y, pub_edge, sub_edge)
 
         data_set_solution.append(data_solution)
 
@@ -181,7 +181,7 @@ def read_data_set_solution(data_path, config_path):
 
 
 # 指定したファイルにデータを一行追加
-def writeTrakingCSV(filename, data_traking):
+def write_traking_csv(filename, data_traking):
     file = open(filename, "a")
 
     file.write(f"{data_traking.id},{data_traking.time},{data_traking.x},{data_traking.y}\n")
@@ -190,7 +190,7 @@ def writeTrakingCSV(filename, data_traking):
 
 
 # 指定したファイルにデータを一行追加
-def writeAssginCSV(filename, data_topic):
+def write_assgin_csv(filename, data_topic):
     file = open(filename, "a")
 
     file.write(f"{data_topic.id},{data_topic.time},{data_topic.x},{data_topic.y}")
@@ -207,7 +207,7 @@ def writeAssginCSV(filename, data_topic):
 
 
 #  クライアントの割り当て情報を一行追記
-def writeSolutionCSV(filename, id, time, x, y, pub_edge, sub_edge, num_topic):
+def write_solution_csv(filename, id, time, x, y, pub_edge, sub_edge, num_topic):
     file = open(filename, "a")
 
     file.write(f"{id},{time},{x},{y}")
@@ -223,7 +223,7 @@ def writeSolutionCSV(filename, id, time, x, y, pub_edge, sub_edge, num_topic):
 
 
 #  edge の情報を書き出し
-def writeEdgeCSV(filename, all_edge):
+def write_edge_csv(filename, all_edge):
     file = open(filename, "w")
 
     file.write("id,x,y,volume,cpu_power\n")
@@ -235,7 +235,7 @@ def writeEdgeCSV(filename, all_edge):
 
 
 #  topic の情報を書き出し
-def writeTopicCSV(filename, all_topic):
+def write_topic_csv(filename, all_topic):
     file = open(filename, "w")
 
     file.write("id,role,save_period,publish_rate,data_size,require_cycle,base_x,base_y\n")

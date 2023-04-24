@@ -58,4 +58,4 @@ def solve_near_edge(index_file, out_file):
                     pub_edge.append(min_id)
                     sub_edge.append(min_id)
 
-            util.writeSolutionCSV(out_file, id, time, data.x, data.y, pub_edge, sub_edge, num_topic)
+            util.write_solution_csv(out_file, id, time, data.x, data.y, pub_edge, sub_edge, num_topic)

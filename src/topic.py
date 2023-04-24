@@ -32,7 +32,7 @@ class Topic(metaclass = ABCMeta):
 
 
 #  一様分布の topic クラス
-class Topic_uniform(Topic):
+class TopicUniform(Topic):
 
     def __init__(self, id, save_period, publish_rate=None, data_size=None, require_cycle=None):
         super().__init__(id, save_period, publish_rate, data_size, require_cycle)
@@ -47,7 +47,7 @@ class Topic_uniform(Topic):
 
 
 #  局所的に分布する topic クラス
-class Topic_local(Topic):
+class TopicLocal(Topic):
 
     def __init__(self, id, save_period, radius, publish_rate=None, data_size=None, require_cycle=None, base_point=None, min_x=0, max_x=12, min_y=0, max_y=12):
         super().__init__(id, save_period, publish_rate, data_size, require_cycle)
@@ -73,7 +73,7 @@ class Topic_local(Topic):
 
 
 #  突発的に発生する topic クラス
-class Topic_incident(Topic):
+class TopicIncident(Topic):
 
     def __init__(self, id, save_period, publish_rate=None, data_size=None, require_cycle=None):
         super().__init__(id, save_period, publish_rate, data_size, require_cycle)

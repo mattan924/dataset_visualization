@@ -1,9 +1,8 @@
 import util
-from client import Client_traking
-from client import Client_topic
-from data import Data_traking, Data_topic
+from client import ClientTraking, ClientTopic
+from data import DataTraking, DataTopic
 from edge import Edge
-from topic import Topic_uniform, Topic_local, Topic_incident
+from topic import TopicUniform, TopicLocal, TopicIncident
 import random
 import pandas as pd
 import numpy as np
@@ -58,7 +57,7 @@ def generate_traking(index_file, config_file, out_file, seed=0):
         # 各クライアントの初期位置の決定
         init_x, init_y = util.init_point(min_x, max_x, min_y, max_y)
 
-        c = Client_traking(id, init_x, init_y, speed)
+        c = ClientTraking(id, init_x, init_y, speed)
 
         all_client.append(c)
 
@@ -68,7 +67,7 @@ def generate_traking(index_file, config_file, out_file, seed=0):
             # クライアントをランダムに移動させる
             c.random_walk(time_step, min_x, max_x, min_y, max_y)
 
-            util.writeTrakingCSV(out_file, Data_traking(c.id, time, c.x, c.y))
+            util.write_traking_csv(out_file, DataTraking(c.id, time, c.x, c.y))
 
 
 # トラッキングデータに pub/sub 関係を割り当てる
@@ -144,11 +143,11 @@ def assign_topic(index_file, out_file, seed=0):
                         init_sub_topic[t.id] = True
                         flag = False
 
-            c_topic = Client_topic(data_traking.id, data_traking.x, data_traking.y, init_pub_topic, init_sub_topic)
+            c_topic = ClientTopic(data_traking.id, data_traking.x, data_traking.y, init_pub_topic, init_sub_topic)
 
             all_client.append(c_topic)
 
-            util.writeAssginCSV(out_file, Data_topic(c_topic.id, 0, c_topic.x, c_topic.y, c_topic.pub_topic, c_topic.sub_topic))
+            util.write_assgin_csv(out_file, DataTopic(c_topic.id, 0, c_topic.x, c_topic.y, c_topic.pub_topic, c_topic.sub_topic))
 
         # 時間を1ステップずつ進めにがら、pub/sub 関係を決める
         for time in range(time_step, simulation_time, time_step):
@@ -166,7 +165,7 @@ def assign_topic(index_file, out_file, seed=0):
 
                 c.select_topic(all_topic)
 
-                util.writeAssginCSV(out_file, Data_topic(c.id, time, c.x, c.y, c.pub_topic, c.sub_topic))
+                util.write_assgin_csv(out_file, DataTopic(c.id, time, c.x, c.y, c.pub_topic, c.sub_topic))
 
 
 # エッジサーバの生成
@@ -198,7 +197,7 @@ def generate_edge(index_file, config_file, out_file):
             y = 2 + 4*i
             all_edge.append(Edge(id, x, y, volume, cpu_power))
     
-    util.writeEdgeCSV(out_file, all_edge)
+    util.write_edge_csv(out_file, all_edge)
 
 
 # トピックの生成
@@ -227,7 +226,7 @@ def generate_topic(index_file, config_file, out_file):
     # トピックの生成
     #  作成したい topic に応じてここを変える
     for i in range(num_topic):
-        t = Topic_uniform(i, save_period)
+        t = TopicUniform(i, save_period)
         all_topic.append(t)
 
-    util.writeTopicCSV(out_file, all_topic)
+    util.write_topic_csv(out_file, all_topic)

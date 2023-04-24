@@ -1,5 +1,5 @@
 #  トラッキングデータを生成する際に使用する Data クラス
-class Data_traking:
+class DataTraking:
 
     def __init__(self, id, time, x, y):
         self.id = id
@@ -9,7 +9,7 @@ class Data_traking:
 
 
 #  pub/sub 関係を決定する際に使用する Data クラス
-class Data_topic:
+class DataTopic:
 
     def __init__(self, id, time, x, y, pub_topic, sub_topic):
         self.id = id
@@ -21,7 +21,7 @@ class Data_topic:
 
 
 #  トピック割り当てを決定する際に使用する Data クラス
-class Data_solution:
+class DataSolution:
 
     def __init__(self, id, time, x, y, pub_edge, sub_edge):
         self.id = id
