@@ -17,8 +17,8 @@ def create_index_file(index_file, config_file):
 
 
 # 設定ファイルの読み込み
-def read_config(path):
-    f = open(path)
+def read_config(config_path):
+    f = open(config_path)
 
     min_x = int(f.readline().split(",")[1])
     max_x = int(f.readline().split(",")[1])
@@ -47,8 +47,8 @@ def read_config(path):
 
 
 #  edge ファイルの読み込み
-def read_edge(path):
-    df = pd.read_csv(path)
+def read_edge(edge_path):
+    df = pd.read_csv(edge_path)
     num_edge = len(df.index)
 
     all_edge = []
@@ -67,8 +67,8 @@ def read_edge(path):
 
 
 #  topic ファイルの読み取り
-def read_topic(path):
-    df = pd.read_csv(path)
+def read_topic(topic_path):
+    df = pd.read_csv(topic_path)
     num_topic = len(df.index)
 
     all_topic = []
