@@ -290,7 +290,6 @@ def create_single_topic_animation(index_file, out_file, FPS=20):
 
 
 # 割り当て付きの分布の可視化
-# 要改修
 def create_single_assign_animation(index_file, out_file, FPS):
     df_index = pd.read_csv(index_file, index_col=0)
 
@@ -377,6 +376,145 @@ def create_single_assign_animation(index_file, out_file, FPS):
 
         for line in line_list:
             img_list.extend(wind1.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color=line[2]))
+
+        imgs.append(img_list)
+
+    ani = animation.ArtistAnimation(fig, imgs, interval=1)
+
+    # fps は1~50までしかとれない
+    ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
+
+
+# 割り当て付きの分布の可視化
+def create_assign_animation(index_file, out_file, FPS):
+    df_index = pd.read_csv(index_file, index_col=0)
+
+    config_file = df_index.at['data', 'config_file']
+    data_file = df_index.at['data', 'solve_file']
+    edge_file = df_index.at['data', 'edge_file']
+
+    parameter = util.read_config(config_file)
+
+    min_x = parameter['min_x']
+    max_x = parameter['max_x']
+    min_y = parameter['min_y']
+    max_y = parameter['max_y']
+    num_edge = parameter['num_edge']
+    num_client = parameter['num_client']
+    num_topic = parameter['num_topic']
+    simulation_time = parameter['simulation_time']
+    time_step = parameter['time_step']
+
+    data_set = util.read_data_set_solution(data_file, config_file)
+
+    # 描画領域の設定
+    fig = plt.figure()
+    wind1 = fig.add_subplot(2, 2, 1)
+    wind2 = fig.add_subplot(2, 2, 2)
+    wind3 = fig.add_subplot(2, 2, 3)
+    wind4 = fig.add_subplot(2, 2, 4)
+    wind1.grid()
+    wind2.grid()
+    wind3.grid()
+    wind4.grid()
+    wind1.set_xlim(min_x, max_x)
+    wind1.set_ylim(min_y, max_y)
+    wind2.set_xlim(min_x, max_x)
+    wind2.set_ylim(min_y, max_y)
+    wind3.set_xlim(min_x, max_x)
+    wind3.set_ylim(min_y, max_y)
+    wind4.set_xlim(min_x, max_x)
+    wind4.set_ylim(min_y, max_y)
+    wind1.set_xticks(np.arange(0, 13, 4))
+    wind1.set_yticks(np.arange(0, 13, 4))
+    wind2.set_xticks(np.arange(0, 13, 4))
+    wind2.set_yticks(np.arange(0, 13, 4))
+    wind3.set_xticks(np.arange(0, 13, 4))
+    wind3.set_yticks(np.arange(0, 13, 4))
+    wind4.set_xticks(np.arange(0, 13, 4))
+    wind4.set_yticks(np.arange(0, 13, 4))
+
+    # エッジサーバの作成
+    all_edge = util.read_edge(edge_file)
+    edge_x = np.zeros(num_edge)
+    edge_y = np.zeros(num_edge)
+
+    for edge in all_edge:
+        edge_x[edge.id] = edge.x
+        edge_y[edge.id] = edge.y
+
+    imgs = []
+
+    for t in range(0, simulation_time, time_step):
+        #  各タイムステップにおけるクライアントの座標を格納
+        #  クライアント全体の分布
+        x_list = []
+        y_list = []
+        #  各 topic の分布
+        pub_x_list = [[] for _ in range(num_topic)]
+        pub_y_list = [[] for _ in range(num_topic)]
+        sub_x_list = [[] for _ in range(num_topic)]
+        sub_y_list = [[] for _ in range(num_topic)]
+        pub_sub_x_list = [[] for _ in range(num_topic)]
+        pub_sub_y_list = [[] for _ in range(num_topic)]
+        line_list = [[] for _ in range(num_topic)]
+
+        for id in range(num_client):
+            data = data_set.pop(0)
+
+            x_list.append(data.x)
+            y_list.append(data.y)
+
+            for n in range(num_topic):
+                if data.pub_edge[n] != -1 and data.sub_edge != -1:
+                    pub_sub_x_list[n].append(data.x)
+                    pub_sub_y_list[n].append(data.y)
+                    
+                    if data.pub_edge[n] == data.sub_edge:
+                        line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "purple"])
+                    else:
+                        line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
+                        line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
+                elif data.pub_edge[n] != -1:
+                    pub_x_list[n].append(data.x)
+                    pub_y_list[n].append(data.y)
+
+                    line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
+                else:
+                    sub_x_list[n].append(data.x)
+                    sub_y_list[n].append(data.y)
+
+                    line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
+
+        my_title = wind1.text(5.5, 13, 'time : {}'.format(t))
+        client_dist = wind1.scatter(x_list, y_list, c="black")
+        img_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+
+        img_publisher1 = wind2.scatter(pub_x_list[0], pub_y_list[0], c="red")
+        img_subscriber1 = wind2.scatter(sub_x_list[0], sub_y_list[0], c="blue")
+        img_pub_sub1 = wind2.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
+        img_edge1 = wind2.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+
+        img_publisher2 = wind3.scatter(pub_x_list[1], pub_y_list[1], c="red")
+        img_subscriber2 = wind3.scatter(sub_x_list[1], sub_y_list[1], c="blue")
+        img_pub_sub2 = wind3.scatter(pub_sub_x_list[1], pub_sub_y_list[1], c="purple")
+        img_edge2 = wind3.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+
+        img_publisher3 = wind4.scatter(pub_x_list[2], pub_y_list[2], c="red")
+        img_subscriber3 = wind4.scatter(sub_x_list[2], sub_y_list[2], c="blue")
+        img_pub_sub3 = wind4.scatter(pub_sub_x_list[2], pub_sub_y_list[2], c="purple")
+        img_edge3 = wind4.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+
+        img_list = [my_title, client_dist, img_publisher1, img_subscriber1, img_pub_sub1, img_edge1, img_publisher2, img_subscriber2, img_pub_sub2, img_edge2, img_publisher3, img_subscriber3, img_pub_sub3, img_edge3]
+
+        for line in line_list[0]:
+            img_list.extend(wind2.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color=line[2]))
+        
+        for line in line_list[1]:
+            img_list.extend(wind3.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color=line[2]))
+        
+        for line in line_list[2]:
+            img_list.extend(wind4.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color=line[2]))
 
         imgs.append(img_list)
 
