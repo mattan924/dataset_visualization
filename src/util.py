@@ -151,17 +151,14 @@ def read_data_set_topic(path, num_topic):
 
 
 #  クライアントの割り当て情報の読み込み
-def read_data_set_solution(data_path, config_path):
-    parameter = read_config(config_path)
-
-    num_topic = parameter['num_topic']
+def read_data_set_solution(data_path, num_topic):
     
     f = open(data_path)
     data_set_solution = []
 
     for line in f:
         l = line.split(",")
-
+        
         id = int(l.pop(0))
         time = l.pop(0)
         x = float(l.pop(0))
