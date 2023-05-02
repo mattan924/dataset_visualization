@@ -471,10 +471,11 @@ def create_assign_animation(index_file, out_file, FPS):
                     pub_sub_y_list[n].append(data.y)
                     
                     if data.pub_edge[n] == data.sub_edge:
-                        line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "purple"])
+                        line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
+                        #line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "purple"])
                     else:
                         line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
-                        line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
+                        #line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
                 elif data.pub_edge[n] != -1:
                     pub_x_list[n].append(data.x)
                     pub_y_list[n].append(data.y)
@@ -484,7 +485,7 @@ def create_assign_animation(index_file, out_file, FPS):
                     sub_x_list[n].append(data.x)
                     sub_y_list[n].append(data.y)
 
-                    line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
+                    #line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
 
         my_title = wind1.text(5.5, 13, 'time : {}'.format(t))
         client_dist = wind1.scatter(x_list, y_list, c="black")
@@ -604,26 +605,27 @@ def create_opt_animation(index_file, out_file, opt_solution, FPS):
             y_list.append(data.y)
 
             for n in range(num_topic):
-                if data.pub_edge[n] != -1 and data.sub_edge != -1:
+                if data.pub_edge[n] != -1 and data.sub_edge[n] != -1:
                     pub_sub_x_list[n].append(data.x)
                     pub_sub_y_list[n].append(data.y)
                     
-                    if data.pub_edge[n] == data.sub_edge:
-                        line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "purple"])
+                    if data.pub_edge[n] == data.sub_edge[n]:
+                        line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
+                        #line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "purple"])
                     else:
                         line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
-                        line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
-                elif data.pub_edge[n] != -1:
+                        #line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge[n]].x, all_edge[data.sub_edge[n]].y), "blue"])
+                elif data.pub_edge[n] != -1 and data.sub_edge[n] == -1:
                     pub_x_list[n].append(data.x)
                     pub_y_list[n].append(data.y)
 
                     line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
-                else:
+                elif data.pub_edge[n] == -1 and data.sub_edge[n] != -1:
                     sub_x_list[n].append(data.x)
                     sub_y_list[n].append(data.y)
 
-                    line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
-
+                    #line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge[n]].x, all_edge[data.sub_edge[n]].y), "blue"])
+                
         my_title = wind1.text(5.5, 13, 'time : {}'.format(t))
         client_dist = wind1.scatter(x_list, y_list, c="black")
         img_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")

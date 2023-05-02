@@ -165,10 +165,12 @@ def read_data_set_solution(data_path, num_topic):
         y = float(l.pop(0))
 
         pub_edge = []
-        for i in range(num_topic):
+        for n in range(num_topic):
             pub_edge.append(int(float(l.pop(0))))
 
-        sub_edge = int(float(l.pop(0)))
+        sub_edge = []
+        for n in range(num_topic):
+            sub_edge.append(int(float(l.pop(0))))
 
         data_solution = DataSolution(id, time, x, y, pub_edge, sub_edge)
 
