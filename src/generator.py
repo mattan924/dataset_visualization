@@ -25,7 +25,7 @@ def generate_traking(index_file, config_file, out_file, seed=0):
         random.seed(seed)
 
     # インデックスファイルから情報を取り出しと更新
-    df_index = pd.read_csv(index_file, index_col=0)
+    df_index = pd.read_csv(index_file, index_col=0, dtype=str)
     df_index.at['data', 'config_file'] = config_file
     df_index.at['data', 'traking_seed'] = seed
     df_index.at['data', 'traking_file'] = out_file
@@ -77,7 +77,7 @@ def assign_topic(index_file, out_file, seed=0):
         sys.exit("index_file is not exist. Create index_file in advance.")
     else:
         # インデックスファイルを読み込み、更新する
-        df_index = pd.read_csv(index_file, index_col=0)
+        df_index = pd.read_csv(index_file, index_col=0, dtype=str)
 
         config_file = df_index.at['data', 'config_file']
         traking_file = df_index.at['data', 'traking_file']
@@ -175,7 +175,7 @@ def generate_edge(index_file, config_file, out_file):
         util.create_index_file(index_file, config_file)
 
     # インデックスファイルの読み込み、更新
-    df_index = pd.read_csv(index_file, index_col=0)
+    df_index = pd.read_csv(index_file, index_col=0, dtype=str)
     df_index.at['data', 'edge_file'] = out_file
 
     df_index.to_csv(index_file)
@@ -207,7 +207,7 @@ def generate_topic(index_file, config_file, out_file):
         util.create_index_file(index_file, config_file)
 
     # インデックスファイルの読み込み、更新
-    df_index = pd.read_csv(index_file, index_col=0)
+    df_index = pd.read_csv(index_file, index_col=0, dtype=str)
     df_index.at['data', 'topic_file'] = out_file
 
     df_index.to_csv(index_file)
