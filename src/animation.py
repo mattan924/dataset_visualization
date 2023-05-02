@@ -466,11 +466,11 @@ def create_assign_animation(index_file, out_file, FPS):
             y_list.append(data.y)
 
             for n in range(num_topic):
-                if data.pub_edge[n] != -1 and data.sub_edge != -1:
+                if data.pub_edge[n] != -1 and data.sub_edge[n] != -1:
                     pub_sub_x_list[n].append(data.x)
                     pub_sub_y_list[n].append(data.y)
                     
-                    if data.pub_edge[n] == data.sub_edge:
+                    if data.pub_edge[n] == data.sub_edge[n]:
                         line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
                         #line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "purple"])
                     else:
