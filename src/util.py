@@ -211,10 +211,11 @@ def write_solution_csv(filename, id, time, x, y, pub_edge, sub_edge, num_topic):
 
     file.write(f"{id},{time},{x},{y}")
 
-    for i in range(num_topic):
-        file.write(f",{pub_edge[i]}")
+    for n in range(num_topic):
+        file.write(f",{pub_edge[n]}")
 
-    file.write(f",{sub_edge}")
+    for n in range(num_topic):
+        file.write(f",{sub_edge[n]}")
 
     file.write("\n")
 
