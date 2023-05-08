@@ -98,8 +98,8 @@ def read_topic(topic_path):
 
 
 # トラッキングデータを読み込む
-def read_data_set_traking(path):
-    df = pd.read_csv(path)
+def read_data_set_traking(data_path):
+    df = pd.read_csv(data_path)
 
     data_set_traking = []
 
@@ -119,9 +119,9 @@ def read_data_set_traking(path):
 
 
 # トピックの情報を持つデータを読み込む
-def read_data_set_topic(path, num_topic):
+def read_data_set_topic(data_path, num_topic):
     data_set_topic = []
-    f = open(path)
+    f = open(data_path)
 
     for line in f:
         l = line.split(",")
@@ -180,8 +180,8 @@ def read_data_set_solution(data_path, num_topic):
 
 
 # 指定したファイルにデータを一行追加
-def write_traking_csv(filename, data_traking):
-    file = open(filename, "a")
+def write_traking_csv(file_path, data_traking):
+    file = open(file_path, "a")
 
     file.write(f"{data_traking.id},{data_traking.time},{data_traking.x},{data_traking.y}\n")
 
@@ -189,8 +189,8 @@ def write_traking_csv(filename, data_traking):
 
 
 # 指定したファイルにデータを一行追加
-def write_assgin_csv(filename, data_topic):
-    file = open(filename, "a")
+def write_assgin_csv(file_path, data_topic):
+    file = open(file_path, "a")
 
     file.write(f"{data_topic.id},{data_topic.time},{data_topic.x},{data_topic.y}")
 
@@ -206,16 +206,16 @@ def write_assgin_csv(filename, data_topic):
 
 
 #  クライアントの割り当て情報を一行追記
-def write_solution_csv(filename, id, time, x, y, pub_edge, sub_edge, num_topic):
-    file = open(filename, "a")
+def write_solution_csv(file_path, data_solution):
+    file = open(file_path, "a")
 
-    file.write(f"{id},{time},{x},{y}")
+    file.write(f"{data_solution.id},{data_solution.time},{data_solution.x},{data_solution.y}")
 
-    for n in range(num_topic):
-        file.write(f",{pub_edge[n]}")
+    for n in range(data_solution.num_topic):
+        file.write(f",{data_solution.pub_edge[n]}")
 
-    for n in range(num_topic):
-        file.write(f",{sub_edge[n]}")
+    for n in range(data_solution.num_topic):
+        file.write(f",{data_solution.sub_edge[n]}")
 
     file.write("\n")
 

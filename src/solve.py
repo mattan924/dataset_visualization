@@ -1,6 +1,7 @@
 import util
 import math
 import pandas as pd
+from data import DataSolution
 
 
 #  2点間の距離を計算する関数
@@ -58,4 +59,4 @@ def solve_near_edge(index_file, out_file):
                     pub_edge.append(min_id)
                     sub_edge.append(min_id)
 
-            util.write_solution_csv(out_file, id, time, data.x, data.y, pub_edge, sub_edge, num_topic)
+            util.write_solution_csv(out_file, DataSolution(id, time, data.x, data.y, pub_edge, sub_edge, num_topic))
