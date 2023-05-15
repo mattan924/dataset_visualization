@@ -59,6 +59,17 @@
 - matplotlib 3.6.1
 - numpy 1.23.4
 
+## Setup
+
+### Prerequisites
+
+- Python 3
+- pip
+
+### Install dependencies
+
+`pip install -r requirement.txt`
+
 ## 使用方法
 
 ### 1. 設定ファイルの作成
