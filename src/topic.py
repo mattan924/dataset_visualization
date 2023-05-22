@@ -31,6 +31,11 @@ class Topic(metaclass = ABCMeta):
         pass
 
 
+    @abstractclassmethod
+    def update(self, min_x, max_x, min_y, max_y, time_step):
+        pass
+
+
 #  一様分布の topic クラス
 class TopicUniform(Topic):
 
@@ -44,6 +49,10 @@ class TopicUniform(Topic):
             return True
         else:
             return False
+        
+    
+    def update(self, min_x, max_x, min_y, max_y, time_step):
+        pass
 
 
 #  局所的に分布する topic クラス
@@ -70,14 +79,20 @@ class TopicLocal(Topic):
             return True
         else:
             return False
-
+        
+    
+    def update(self, min_x, max_x, min_y, max_y, time_step):
+        pass
+        
 
 #  突発的に発生する topic クラス
 class TopicIncident(Topic):
 
-    def __init__(self, id, save_period, publish_rate=None, data_size=None, require_cycle=None):
+    def __init__(self, id, save_period, radius, time_limit, publish_rate=None, data_size=None, require_cycle=None):
         super().__init__(id, save_period, publish_rate, data_size, require_cycle)
         self.role = 2
+        self.radius = radius
+        self.time_limit = time_limit
         #  突発的な領域の中心座標のリスト
         self.random_point = []
 
@@ -87,7 +102,7 @@ class TopicIncident(Topic):
     
 
     #  領域を更新するメソッド
-    def decide_random_point(self, min_x, max_x, min_y, max_y, time_step, radius, time_limit):
+    def decide_random_point(self, min_x, max_x, min_y, max_y, time_step):
         #  既存の領域のカウントを進める
         for point in self.random_point:
             point.time_advance(time_step)
@@ -97,7 +112,7 @@ class TopicIncident(Topic):
             x = random.uniform(min_x, max_x)
             y = random.uniform(min_y, max_y)
 
-            point = Point(x, y, radius, time_limit)
+            point = Point(x, y, self.radius, self.time_limit)
 
             self.random_point.append(point)
 
@@ -105,6 +120,10 @@ class TopicIncident(Topic):
         for i in reversed(range(len(self.random_point))):
             if self.random_point[i].time <= 0:
                 del self.random_point[i]
+
+
+    def update(self, min_x, max_x, min_y, max_y, time_step):
+        self.decide_random_point(min_x, max_x, min_y, max_y, time_step)
 
 
 #  制限時間付き領域用のクラス
