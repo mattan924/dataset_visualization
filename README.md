@@ -215,7 +215,7 @@ animation.py の create_topic_animation(index_file, out_file, FPS) という関�
 このメソッドは呼ばれるたびに次の時刻でのクライアントの位置座標を決定する。
 
 座標の決め方は、乱数を用いて現在の進行方向を元に次に進む向きを決定し、その向きに対してどれだけ進むかを現在の速度を元に決定する。
-また、メソッドが呼ばれるたびに現在の速度を平均、標準偏差を10としたガウス分布をもちに次の速度を決定している。
+また、メソッドが呼ばれるたびに現在の速度を平均、標準偏差を10としたガウス分布をもとに次の速度を決定している。
 
 #### ClientTopic クラス
 
@@ -229,13 +229,13 @@ animation.py の create_topic_animation(index_file, out_file, FPS) という関�
 | pub_topic | 各 topic をpublish しているかどうか |
 | sub_topic | 各 topic を subscribe しているかどうか    |
 
-また、トラッキングデータに対して pub/sub 関係を割り当てる際に使用する select_topic というメソッドを持つ
+また、トラッキングデータに対して pub/sub 関係を割り当てる際に使用する `select_topic` というメソッドを持つ
 
 |   引数   | パラメータ | デフォルト値 |            説明               |
 | :------: | :------: | :-------: | :-----------------------------: |
 | 第 1 引数 | all_topic |   無し   |    全ての topic のインスタンスを格納しているリスト    |
 
-このメソッドが呼ばれた際に、all_topic から各トピックを取り出し、それぞれの topic の特徴に応じて該当のクライアントがそれぞれの
+このメソッドが呼ばれた際に、`all_topic` から各トピックを取り出し、それぞれの `topic` の特徴に応じて該当のクライアントがそれぞれの
 topic を publish, subscribe を行うのかを決定する。また新しい topic を作成する際にはこのメソッドの中に pub/sub の決定の仕方
 を追記する必要がある。
 
@@ -287,8 +287,8 @@ pub_topic[0] = True (1) となる。sub_topic についても同様である。
 |    time   |          時刻           |
 |     x     |         x 座標         |
 |     y     |         y 座標         |
-| pub_topic | 各 topic のデータをどのエッジサーバに　publish しているか |
-| sub_topic | どのエッジサーバからデータを subscribe している   |
+| pub_edge | 各 topic のデータをどのエッジサーバに publish しているか |
+| sub_edge | どのエッジサーバからデータを subscribe している   |
 
 このクラスはエッジサーバに対する割り当てを保存するファイルで一行に書き込まれる情報に相当する。
 すなわち、クライアント i が時刻 t に (x, y) におり、各トピックをどのエッジサーバに対して publish/subscribe をするのかを
@@ -296,8 +296,7 @@ pub_topic[0] = True (1) となる。sub_topic についても同様である。
 
 また、publish 先のエッジサーバは topic ごとに決定するが、subscribe するサーバは全ての topic で同じサーバを選択する。
 
-id = 0 の topic をid=3のエッジサーバに publish する場合では pub_topic[0] = 3 となる。
-一方、subscribe 先のサーバは全ての topic で共通であるため、id = 1のサーバから subscribe する場合 sub_topic = 1 となる。
+`id = 0` の topic を`id=3`のエッジサーバに publish する場合では `pub_topic[0] = 3` となる。一方、subscribe 先のサーバは全ての topic で共通であるため、`id = 1` のサーバから subscribe する場合 `sub_topic = 1` となる。
 
 ## edge.py
 
@@ -311,7 +310,7 @@ id = 0 の topic をid=3のエッジサーバに publish する場合では pub_
 |     x     |         x 座標         |
 |     y     |         y 座標         |
 |  volume   | エッジサーバのストレージ容量 |
-| cpu_power | エッジサーバのクロック数   |
+| cpu_cycle | エッジサーバのクロック数   |
 
 `edge = Edge(0, 8.5, 8.5, 1000, 10000)`
 
@@ -331,12 +330,12 @@ id = 0 の topic をid=3のエッジサーバに publish する場合では pub_
 |   data_size   | 1メッセージあたりのデータサイズ (MB) |
 | require_cycle | 1メッセージを処理するのに必要なクロック数  |
 
-__init__ メソッドにおいて publish_rate, data_size, require_cycle が None で与えられた場合、
-ランダムな値が設定される。publish_rate は 0.1~10 の値となり、data_size は 1~256 (これは MQTT の最大データサイズ)
-require_cycle は 1e4~1e5なる。
+`__init__` メソッドにおいて `publish_rate`, `data_size`, `require_cycle` が `None` で与えられた場合、
+ランダムな値が設定される。`publish_rate` は 0.1~10 の値となり、`data_size` は 1~256(これは MQTT の最大データサイズ)
+`require_cycle` は 1e4~1e5なる。
 
-init_topic は @abstractclassmethod デコレータと付けられており、topic クラスを継承する全てのクラスで実装する必要がる。
-このメソッドは、各クライアントが初期にその topic を pub/sub するのかを決定するためのメソッドある
+`init_topic`, `update` は `@abstractclassmethod` デコレータと付けられており、`Topic` クラスを継承する全てのクラスで実装する必要がる。
+`init_topic`メソッドは、各クライアントが初期にその topic を pub/sub するのかを決定するためのメソッドあり、`update`メソッドは
 
 ### TopicUniform クラス
 

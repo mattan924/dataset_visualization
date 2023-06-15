@@ -26,22 +26,21 @@ def create_data_set(data_set_size, index_file_base, config_file, traking_file_ba
         print(f"data_set is created {(i / data_set_size)*100}%")
 
 
-"""
-index_file_base = "../../reinforcement_learning/dataset/data_set_hard/index/index"
-config_file = "../../reinforcement_learning/dataset/data_set_hard/config/config.csv"
-traking_file_base = "../../reinforcement_learning/dataset/data_set_hard/traking/traking"
-assign_file_base = "../../reinforcement_learning/dataset/data_set_hard/assign/assign"
-edge_file_base = "../../reinforcement_learning/dataset/data_set_hard/edge/edge"
-topic_file_base = "../../reinforcement_learning/dataset/test_data_set_hard/topic/topic"
-animation_file_base = "../../reinforcement_learning/dataset/data_set_hard/animation/animation"
 
-dataset_size = 1000
+index_file_base = "../../reinforcement_learning/dataset/data_set/index/index"
+config_file = "../../reinforcement_learning/dataset/data_set/config/config.csv"
+traking_file_base = "../../reinforcement_learning/dataset/data_set/traking/traking"
+assign_file_base = "../../reinforcement_learning/dataset/data_set/assign/assign"
+edge_file_base = "../../reinforcement_learning/dataset/data_set/edge/edge"
+topic_file_base = "../../reinforcement_learning/dataset/test_data_set/topic/topic"
+animation_file_base = "../../reinforcement_learning/dataset/data_set/animation/animation"
+
+dataset_size = 100
 
 create_data_set(dataset_size, index_file_base, config_file, traking_file_base, assign_file_base, edge_file_base, topic_file_base)
+
+
 """
-
-
-
 index_file = "../../reinforcement_learning/dataset/learning_data/index/index_multi2.csv"
 config_file = "../../reinforcement_learning/dataset/test_data_set_hard/config/config.csv"
 traking_file = "../../reinforcement_learning/dataset/test_data_set_hard/traking/traking_0.csv"
@@ -49,6 +48,7 @@ assign_file = "../../reinforcement_learning/dataset/test_data_set_hard/assign/as
 edge_file = "../../reinforcement_learning/dataset/test_data_set_hard/edge/edge_0.csv"
 topic_file = "../../reinforcement_learning/dataset/test_data_set_hard/topic/topic_0.csv"
 animation_file = "../../reinforcement_learning/dataset/learning_data/animation/animation_multi2.gif"
+"""
 
 #generate_traking(index_file, config_file, traking_file)
 
@@ -58,4 +58,4 @@ animation_file = "../../reinforcement_learning/dataset/learning_data/animation/a
 
 #assign_topic(index_file, assign_file)
 
-create_topic_animation(index_file, animation_file, 10)
+#create_topic_animation(index_file, animation_file, 10)
