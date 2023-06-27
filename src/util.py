@@ -229,7 +229,7 @@ def write_edge_csv(file_path, all_edge):
     file.write("id,x,y,volume,cpu_power\n")
 
     for edge in all_edge:
-        file.write(f"{edge.id},{edge.x},{edge.y},{edge.volume},{edge.cpu_power}\n")
+        file.write(f"{edge.id},{edge.x},{edge.y},{edge.volume},{edge.cpu_cycle}\n")
 
     file.close()
 
