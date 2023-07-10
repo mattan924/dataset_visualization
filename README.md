@@ -86,10 +86,10 @@
 | 'num_client' | モバイルクライアントの数 |
 | 'num_topic' | トピックの数 |
 | 'num_edge' | エッジサーバの数 |
-| 'volume' | エッジサーバのストレージ容量 (Mbyte) |
-| 'cpu_cycle' | エッジサーバのCPU周波数 (Hz) |
+| 'volume' | エッジサーバのストレージ容量 (TB) |
+| 'cpu_cycle' | エッジサーバのCPU周波数 (GHz) |
 | 'cloud_time' | クラウドまでの通信遅延 (ms) |
-| 'cloud_cycle' | クラウドの cpu 周波数 (Hz) |
+| 'cloud_cycle' | クラウドの cpu 周波数 (GHz) |
 | 'save_period' | データがエッジサーバに保存される時間 (s) |
 | 'speed' | モバイルクライアントの平均移動時速 (km/h) |
 
