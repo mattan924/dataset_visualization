@@ -16,7 +16,7 @@ class Topic(metaclass = ABCMeta):
             self.publish_rate = publish_rate
 
         if data_size == None:
-            self.data_size = random.randint(1, 256) / 1e3 # 1~256 MB (MQTTの最大データサイズ) GB への変換
+            self.data_size = random.randint(1, 256) / 1e6 # 1~256 MB (MQTTの最大データサイズ) TB への変換
         else:
             self.data_size = data_size
 
