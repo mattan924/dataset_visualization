@@ -153,8 +153,7 @@ def assign_topic(index_file, out_file, seed=0):
         for time in range(time_step, simulation_time, time_step):
             # 突発的なトピックの更新
             for t in all_topic:
-                if t.role == 2:
-                    t.decide_random_point(min_x, max_x, min_y, max_y, time_step)
+                t.update(min_x, max_x, min_y, max_y, time_step)
 
             # 各クライアントのトピックの選択
             for c in all_client:

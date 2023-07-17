@@ -223,20 +223,20 @@ def write_solution_csv(file_path, data_solution, num_topic):
 
 
 #  edge の情報を書き出し
-def write_edge_csv(filename, all_edge):
-    file = open(filename, "w")
+def write_edge_csv(file_path, all_edge):
+    file = open(file_path, "w")
 
     file.write("id,x,y,volume,cpu_power\n")
 
     for edge in all_edge:
-        file.write(f"{edge.id},{edge.x},{edge.y},{edge.volume},{edge.cpu_power}\n")
+        file.write(f"{edge.id},{edge.x},{edge.y},{edge.volume},{edge.cpu_cycle}\n")
 
     file.close()
 
 
 #  topic の情報を書き出し
-def write_topic_csv(filename, all_topic):
-    file = open(filename, "w")
+def write_topic_csv(file_path, all_topic):
+    file = open(file_path, "w")
 
     file.write("id,role,save_period,publish_rate,data_size,require_cycle,base_x,base_y\n")
 
