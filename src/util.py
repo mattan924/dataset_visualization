@@ -206,15 +206,15 @@ def write_assgin_csv(file_path, data_topic):
 
 
 #  クライアントの割り当て情報を一行追記
-def write_solution_csv(file_path, data_solution):
+def write_solution_csv(file_path, data_solution, num_topic):
     file = open(file_path, "a")
 
     file.write(f"{data_solution.id},{data_solution.time},{data_solution.x},{data_solution.y}")
 
-    for n in range(data_solution.num_topic):
+    for n in range(num_topic):
         file.write(f",{data_solution.pub_edge[n]}")
 
-    for n in range(data_solution.num_topic):
+    for n in range(num_topic):
         file.write(f",{data_solution.sub_edge[n]}")
 
     file.write("\n")
