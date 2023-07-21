@@ -327,7 +327,7 @@ pub_topic[0] = True (1) となる。sub_topic についても同様である。
 |      id       |  topic 固有のID  |
 |  save_period  |  データをストレージに保存する期間 (s)  |
 | publish_rate  |   publish を行う間隔 (/s)     |
-|   data_size   | 1メッセージあたりのデータサイズ (MB) |
+|   data_size   | 1メッセージあたりのデータサイズ (TB) |
 | require_cycle | 1メッセージを処理するのに必要なクロック数  |
 
 `__init__` メソッドにおいて `publish_rate`, `data_size`, `require_cycle` が `None` で与えられた場合、

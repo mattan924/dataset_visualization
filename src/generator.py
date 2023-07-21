@@ -183,7 +183,7 @@ def generate_edge(index_file, config_file, out_file):
     parameter = util.read_config(config_file)
 
     volume = parameter['volume']
-    cpu_power = parameter['cpu_power']
+    cpu_cycle = parameter['cpu_cycle']
 
     # エッジサーバの生成
     all_edge = []
@@ -194,7 +194,7 @@ def generate_edge(index_file, config_file, out_file):
             id = i*3+j
             x = 2 + 4*j
             y = 2 + 4*i
-            all_edge.append(Edge(id, x, y, volume, cpu_power))
+            all_edge.append(Edge(id, x, y, volume, cpu_cycle))
     
     util.write_edge_csv(out_file, all_edge)
 

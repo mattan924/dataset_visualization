@@ -44,8 +44,8 @@ def create_traking_animation(index_file, out_file, FPS=20):
     edge_y = np.zeros(num_edge)
 
     for edge in all_edge:
-        edge_x[edge.id] = edge.x
-        edge_y[edge.id] = edge.y
+        edge_x[int(edge.id)] = edge.x
+        edge_y[int(edge.id)] = edge.y
 
     imgs = []
 

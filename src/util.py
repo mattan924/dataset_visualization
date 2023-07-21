@@ -38,7 +38,7 @@ def read_config(config_path):
 
     parameter = { 'min_x' : min_x, 'max_x' : max_x, 'min_y' : min_y, 'max_y' : max_y, 'simulation_time' : simulation_time, 'time_step' : time_step}
     parameter1 = { 'num_client' : num_client, 'num_topic' : num_topic, 'num_edge' : num_edge}
-    parameter2 = { 'volume' : volume, 'cpu_power' : cpu_cycle, 'cloud_time' : cloud_time, 'cloud_cycle' : cloud_cycle, 'save_period' : save_period, 'speed' : speed}
+    parameter2 = { 'volume' : volume, 'cpu_cycle' : cpu_cycle, 'cloud_time' : cloud_time, 'cloud_cycle' : cloud_cycle, 'save_period' : save_period, 'speed' : speed}
 
     parameter.update(parameter1)
     parameter.update(parameter2)
@@ -58,9 +58,9 @@ def read_edge(edge_path):
         x = data['x']
         y = data['y']
         volume = data['volume']
-        cpu_power = data['cpu_power']
+        cpu_cycle = data['cpu_cycle']
 
-        edge = Edge(id, x, y, volume, cpu_power)
+        edge = Edge(id, x, y, volume, cpu_cycle)
         all_edge.append(edge)
 
     return all_edge
@@ -226,7 +226,7 @@ def write_solution_csv(file_path, data_solution, num_topic):
 def write_edge_csv(file_path, all_edge):
     file = open(file_path, "w")
 
-    file.write("id,x,y,volume,cpu_power\n")
+    file.write("id,x,y,volume,cpu_cycle\n")
 
     for edge in all_edge:
         file.write(f"{edge.id},{edge.x},{edge.y},{edge.volume},{edge.cpu_cycle}\n")

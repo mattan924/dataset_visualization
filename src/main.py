@@ -42,21 +42,25 @@ create_data_set(dataset_size, index_file_base, config_file, traking_file_base, a
 """
 
 
-index_file = "../../reinforcement_learning/dataset/debug/index/index_hard.csv"
-config_file = "../../reinforcement_learning/dataset/debug/config/config_hard.csv"
-traking_file = "../../reinforcement_learning/dataset/debug/traking/traking_hard.csv"
-assign_file = "../../reinforcement_learning/dataset/debug/assign/assign_hard.csv"
-edge_file = "../../reinforcement_learning/dataset/debug/edge/edge_hard.csv"
-topic_file = "../../reinforcement_learning/dataset/debug/topic/topic_hard.csv"
-animation_file = "../../reinforcement_learning/dataset/debug/animation/animation_hard.gif"
+index_file = "../dataset/data/index/index_readme.csv"
+config_file = "../dataset/data/config/config_readme.csv"
+traking_file = "../dataset/data/traking/traking_readme.csv"
+assign_file = "../dataset/data/assign/assign_readme.csv"
+edge_file = "../dataset/data/edge/edge_readme.csv"
+topic_file = "../dataset/data/topic/topic_readme.csv"
+animation_file = "../dataset/data/animation/animation_readme.gif"
+
+traking_animation_file = "../dataset/data/animation/traking_readme.gif"
 
 
-generate_traking(index_file, config_file, traking_file)
+# generate_traking(index_file, config_file, traking_file)
 
-generate_edge(index_file, config_file, edge_file)
+# generate_edge(index_file, config_file, edge_file)
 
-generate_topic(index_file, config_file, topic_file)
+# generate_topic(index_file, config_file, topic_file)
 
-assign_topic(index_file, assign_file)
+# assign_topic(index_file, assign_file)
 
-create_topic_animation(index_file, animation_file, 10)
+# create_topic_animation(index_file, animation_file, 10)
+
+create_traking_animation(index_file, traking_animation_file, 10)
