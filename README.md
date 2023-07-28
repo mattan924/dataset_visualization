@@ -97,7 +97,7 @@
 
 ![設定ファイル](./figure/config.png)
 
-この場合、12 km 四方の領域にモバイルクライアント 50 人、エッジサーバ 9 つ、1 s おきに位置情報を書き出すということを 300 s 分行うことを設定している。
+この場合、12 km 四方の領域にモバイルクライアント 15 人、エッジサーバ 9 つ、5 s おきに位置情報を書き出すということを 300 s 間行うことを設定している。
 
 また下記のトラッキングデータの作成及び、可視化にはあらかじめこの設定ファイルを作成する必要がある。また作成の際には属性の順番を入れ替えてはいけない。
 
@@ -107,7 +107,7 @@
 
 ![インデックス](./figure/index.png)
 
-util.py の create_index_file(index_file, config_file) という関数を呼び出すことで生成することができる。
+util.py の `create_index_file(index_file, config_file)` という関数を呼び出すことで生成することができる。
 
 |   引数    | パラメータ  | デフォルト値 |        説明        |
 | :-------: | :---------: | :----------: | :----------------: |
@@ -116,7 +116,7 @@ util.py の create_index_file(index_file, config_file) という関数を呼び�
 
 ### 3. トラッキングデータの生成
 
-generator.py の generte_traking(index_file, config_file, out_file, seed=0) という関数を呼び出すことでトラッキングデータを生成することができる。
+generator.py の `generte_traking(index_file, config_file, out_file, seed=0)` という関数を呼び出すことでトラッキングデータを生成することができる。
 
 |   引数    | パラメータ  | デフォルト値 |            説明            |
 | :-------: | :---------: | :----------: | :------------------------: |
@@ -127,7 +127,7 @@ generator.py の generte_traking(index_file, config_file, out_file, seed=0) と�
 
 seed 値を引数に与えない場合のデフォルト値は 0 になっており、この場合 seed 値はランダムに決められ、データは生成される。また使用された seed 値は index_file に記録されるため後で確認することができ、この seed 値を第 4 引数に与えることで再現することができる。
 
-指定された index_file のパスが存在しない場合、内部で create_index_file が自動的に呼び出されるため事前に index_file を作成する必要はない。
+指定された index_file のパスが存在しない場合、内部で `create_index_file` が自動的に呼び出されるため事前に index_file を作成する必要はない。
 
 生成したトラッキングデータは out_file で指定したファイルに下記のように書き込まれる。
 
@@ -144,7 +144,7 @@ seed 値を引数に与えない場合のデフォルト値は 0 になってお
 
 ### 4. トラッキングデータにトピックを割り当てる
 
-generator.py の assign_topic(index_file, out_file, seed=0) という関数を呼び出すことでトラッキングデータにトピックを割り当てることができる。
+generator.py の `assign_topic(index_file, out_file, seed=0)` という関数を呼び出すことでトラッキングデータにトピックを割り当てることができる。
 
 |   引数    | パラメータ | デフォルト値 |            説明            |
 | :-------: | :--------: | :----------: | :------------------------: |
@@ -159,7 +159,7 @@ index_file が存在しない場合、プログラムは停止しエラーメッ
 
 ### 5. トラッキングデータの可視化
 
-animation.py の create_traking_animation(index_file, out_file, FPS) という関数を呼び出すことでトラッキングデータの可視化を行うことができる。
+animation.py の `create_traking_animation(index_file, out_file, FPS)` という関数を呼び出すことでトラッキングデータの可視化を行うことができる。
 
 |   引数    | パラメータ | デフォルト値 |                          説明                           |
 | :-------: | :--------: | :----------: | :-----------------------------------------------------: |
@@ -173,7 +173,7 @@ animation.py の create_traking_animation(index_file, out_file, FPS) という�
 
 ### 6. トピック付きトラッキングデータの可視化
 
-animation.py の create_topic_animation(index_file, out_file, FPS) という関数を呼び出すことでトピックの割り当て付きのトラッキングデータの
+animation.py の `create_topic_animation(index_file, out_file, FPS)` という関数を呼び出すことでトピックの割り当て付きのトラッキングデータの
 可視化を行うことができる。
 
 |   引数    | パラメータ | デフォルト値 |                          説明                           |
@@ -236,7 +236,7 @@ animation.py の create_topic_animation(index_file, out_file, FPS) という関�
 | 第 1 引数 | all_topic |   無し   |    全ての topic のインスタンスを格納しているリスト    |
 
 このメソッドが呼ばれた際に、`all_topic` から各トピックを取り出し、それぞれの `topic` の特徴に応じて該当のクライアントがそれぞれの
-topic を publish, subscribe を行うのかを決定する。また新しい topic を作成する際にはこのメソッドの中に pub/sub の決定の仕方
+topic を publish, subscribe を行うのかを決定する。また新しい `topic` を作成する際にはこのメソッドの中に pub/sub の決定の仕方
 を追記する必要がある。
 
 ### data.py
@@ -274,8 +274,13 @@ pub/sub 関係付きトラッキングデータを扱うためのクラス
 すなわちクライアント i が時刻 t に (x, y) におり、各 topic をpublish/subscribe しているかどうかという情報を
 一つのインスタンスとして扱うものである。
 
-また、pub_topic, sub_topic はともに長さが topic の数である numpy 配列であり、id=0のtopicをpublishする場合
-pub_topic[0] = True (1) となる。sub_topic についても同様である。
+また、`pub_topic`, `sub_topic` はともに長さが topic の数と等しい numpy 配列であり、`id=0` の topic を publish する場合
+
+```python
+pub_topic[0] = True 
+```
+
+となる。sub_topic についても同様である。
 
 ### DataSolution クラス
 
@@ -296,7 +301,7 @@ pub_topic[0] = True (1) となる。sub_topic についても同様である。
 
 また、publish 先のエッジサーバは topic ごとに決定するが、subscribe するサーバは全ての topic で同じサーバを選択する。
 
-`id = 0` の topic を`id=3`のエッジサーバに publish する場合では `pub_topic[0] = 3` となる。一方、subscribe 先のサーバは全ての topic で共通であるため、`id = 1` のサーバから subscribe する場合 `sub_topic = 1` となる。
+`id = 0` の topic を `id=3` のエッジサーバに publish する場合では `pub_topic[0] = 3` となる。一方、subscribe 先のサーバは全ての topic で共通であるため、`id = 1` のサーバから subscribe する場合 `sub_topic = 1` となる。
 
 ## edge.py
 
@@ -312,7 +317,9 @@ pub_topic[0] = True (1) となる。sub_topic についても同様である。
 |  volume   | エッジサーバのストレージ容量 |
 | cpu_cycle | エッジサーバのクロック数   |
 
-`edge = Edge(0, 8.5, 8.5, 1000, 10000)`
+```python
+edge = Edge(0, 8.5, 8.5, 1000, 10000)
+```
 
 上記のように Edge オブジェクトを生成することで、エッジサーバごとのデータをまとめて扱うことができます。
 
@@ -335,20 +342,20 @@ pub_topic[0] = True (1) となる。sub_topic についても同様である。
 `require_cycle` は 1e4~1e5なる。
 
 `init_topic`, `update` は `@abstractclassmethod` デコレータと付けられており、`Topic` クラスを継承する全てのクラスで実装する必要がる。
-`init_topic`メソッドは、各クライアントが初期にその topic を pub/sub するのかを決定するためのメソッドあり、`update`メソッドは
+`init_topic` メソッドは、各クライアントが初期にその topic を pub/sub するのかを決定するためのメソッドあり、`update` メソッドは
 
 ### TopicUniform クラス
 
-このクラスはこの topic を pub/sub するクライアントが一様に分布するような特徴を持つ topic を扱うためのクラス
+このクラスはこの `topic` を pub/sub するクライアントが一様に分布するような特徴を持つ topic を扱うためのクラス
 
 |      属性      |         説明           |
 | :-----------: | :--------------------: |
 |      role       |  特徴を表すための属性  |
 
-この topic では Topic クラスで持つ属性の他に role 属性を持つ。これは各 topic がどの様な特徴を持つのかを表すためのものである。
-Topic_uniform クラスでは `role = 0` とする。
+この topic では Topic クラスで持つ属性の他に `role` 属性を持つ。これは各 topic がどの様な特徴を持つのかを表すためのものである。
+`TopicUniform` クラスでは `role = 0` とする。
 
-Topic_uniform クラスでの init_topic メソッドはランダムに pub/sub を決定する。
+`TopicUniform` クラスでの `init_topic` メソッドはランダムに pub/sub を決定する。
 
 ### TopicLocal クラス
 
@@ -360,10 +367,10 @@ Topic_uniform クラスでの init_topic メソッドはランダムに pub/sub 
 |    radius    |  局所的な領域の半径 (km)  |
 |  base_point  |  局所的な領域の中心座標  |
 
-この topic では Topic クラスで持つ属性の他に role 属性を持つ。これは各 topic がどの様な特徴を持つのかを表すためのものである。
-Topic_uniform クラスでは `role = 1` とする。また、局所的な領域の中心座標と半径の情報を持つ。
+この topic では `Topic` クラスで持つ属性の他に `role` 属性を持つ。これは各 topic がどの様な特徴を持つのかを表すためのものである。
+`TopicLocal` クラスでは `role = 1` とする。また、局所的な領域の中心座標と半径の情報を持つ。
 
-Topic_uniform クラスでの init_topic メソッドは領域の半径内にいるクライアントが該当 topic を pub/sub する。
+`TopicLocal` クラスでの `init_topic` メソッドは領域の半径内にいるクライアントが該当 topic を pub/sub する。
 
 ### TopicIncident クラス
 
@@ -375,16 +382,16 @@ Topic_uniform クラスでの init_topic メソッドは領域の半径内にい
 |  random_point  |  局所的かつ突発的に発生する領域を保持するリスト  |
 
 この topic では Topic クラスで持つ属性の他に role 属性を持つ。これは各 topic がどの様な特徴を持つのかを表すためのものである。
-Topic_uniform クラスでは `role = 2` とする。また、局所的かつ突発的に発生する領域を保持するためのリストを持つ。
+`TopicIncident` クラスでは `role = 2` とする。また、局所的かつ突発的に発生する領域を保持するためのリストを持つ。
 
-Topic_incident クラスでの init_topic メソッドでは、誰も初期段階では pub/sub を行なわないようにしている。
+`TopicIncident` クラスでの `init_topic` メソッドでは、誰も初期段階では pub/sub を行なわないようにしている。
 
-また decide_random_point メソッドでは領域の更新を行う。具体的には、既存の領域の残り時間を減らし、新規に領域を生成するかを
-ランダムに決定する。最後に、領域の残り時間が 0 になったものは random_point リストから削除する。
+また `decide_random_point` メソッドでは領域の更新を行う。具体的には、既存の領域の残り時間を減らし、新規に領域を生成するかを
+ランダムに決定する。最後に、領域の残り時間が 0 になったものは `random_point` リストから削除する。
 
 ### Point クラス
 
-このクラスは Topic_incident クラスで扱う局所的かつ突発的に発生する領域の情報を扱うためのクラスである。
+このクラスは `TopicIncident` クラスで扱う局所的かつ突発的に発生する領域の情報を扱うためのクラスである。
 
 |      属性      |         説明           |
 | :-----------: | :--------------------: |
@@ -393,8 +400,8 @@ Topic_incident クラスでの init_topic メソッドでは、誰も初期段�
 |  radius  |  領域の半径  |
 |  time  |  領域の残り時間 (s)  |
 
-このクラスは領域の位置と範囲の他に time という属性で領域の残り時間を保持している。 time が 0 以上の時領域が生成されており
-この範囲内に位置するクライアントが Topic_incident クラスで表現される topic を pub/sub することになる。
+このクラスは領域の位置と範囲の他に `time` という属性で領域の残り時間を保持している。 `time` が 0 以上の時領域が生成されており
+この範囲内に位置するクライアントが `TopicIncident` クラスで表現される topic を pub/sub することになる。
 
 `time_advance` メソッドでは引数として `advance_time` を受け取り、領域の残り時間を `advance_time` 分だけ減らす。
 
@@ -445,7 +452,7 @@ index_file とは config_file や edge_file, topic_file などのパスや各種
 
 シミュレーション領域の範囲や時間、何秒おきの軌跡データにするか、生成するモバイルクライアントの数、移動速度を読み込む。
 
-次に、`Client_traking` クラスのインスタンスをモバイルクライアントの数だけ生成し、初期化する。その後 `time_step` ごとにモバイルクライアントをランダムな向きに
+次に、`ClientTraking` クラスのインスタンスをモバイルクライアントの数だけ生成し、初期化する。その後 `time_step` ごとにモバイルクライアントをランダムな向きに
 `speed` の速さで移動させ次の位置を決定する。その後出力先である `out_file` に書き出す。これを `simulation_time` に達するまで繰り返す。
 
 ### assign_topic 関数
@@ -483,9 +490,9 @@ pub/sub 関係を割り付ける際に使用した `seed`値と出力先ファ�
 シミュレーション範囲や時間、 何秒おきのデータを作成するのか、割り付ける topic の種類を読み込む。
 
 次に、`traking_file` を読み込み、トラキングデータを取得する。取得したトラキングデータから各クライアントの情報を取り出し、取り出した情報も元に初期の pub/sub 関係を
-決定する。これらの情報を元に `Client_topic` クラスのインスタンスをモバイルクライアントの数だけ生成する。
+決定する。これらの情報を元に `ClientTopic` クラスのインスタンスをモバイルクライアントの数だけ生成する。
 
-その後 `time_step` ごとに `Client_topic` のインスタンスの位置座標をトラキングデータを元に更新する。更新後の位置座標を元に pub/sub 関係を割り付ける。
+その後 `time_step` ごとに `ClientTopic` のインスタンスの位置座標をトラキングデータを元に更新する。更新後の位置座標を元に pub/sub 関係を割り付ける。
 その後出力先ファイルである `out_file` に書き出す。これを `simulation_time`　に達するまで繰り返す。
 
 ### generate_edge 関数
@@ -507,7 +514,7 @@ pub/sub 関係を割り付ける際に使用した `seed`値と出力先ファ�
 | 属性 | 値 |
 | :--: | :--: |
 | 'volume' | エッジサーバのストレージ容量 |
-| 'cpu_power' | エッジサーバの CPU クロック数 |
+| 'cpu_cycle' | エッジサーバの CPU クロック数 |
 
 現状、エッジサーバの位置と数に関しては固定としており、今後の拡張を予定している。
 
