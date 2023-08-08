@@ -579,8 +579,8 @@ def create_opt_animation(index_file, out_file, opt_solution, FPS):
     edge_y = np.zeros(num_edge)
 
     for edge in all_edge:
-        edge_x[edge.id] = edge.x
-        edge_y[edge.id] = edge.y
+        edge_x[int(edge.id)] = edge.x
+        edge_y[int(edge.id)] = edge.y
 
     imgs = []
 
@@ -656,6 +656,108 @@ def create_opt_animation(index_file, out_file, opt_solution, FPS):
         for line in line_list[2]:
             img_list.extend(wind4.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color=line[2]))
 
+        imgs.append(img_list)
+
+    ani = animation.ArtistAnimation(fig, imgs, interval=1)
+
+    # fps は1~50までしかとれない
+    ani.save(out_file, writer=animation.PillowWriter(fps=FPS))
+
+
+# 割り当て付きの分布の可視化
+def create_opt_animation_onetopic(index_file, out_file, opt_solution, FPS):
+    df_index = pd.read_csv(index_file, index_col=0)
+
+    config_file = df_index.at['data', 'config_file']
+    edge_file = df_index.at['data', 'edge_file']
+
+    parameter = util.read_config(config_file)
+
+    min_x = parameter['min_x']
+    max_x = parameter['max_x']
+    min_y = parameter['min_y']
+    max_y = parameter['max_y']
+    num_edge = parameter['num_edge']
+    num_client = parameter['num_client']
+    num_topic = parameter['num_topic']
+    simulation_time = parameter['simulation_time']
+    time_step = parameter['time_step']
+
+    data_set = util.read_data_set_solution(opt_solution, num_topic)
+
+    # 描画領域の設定
+    fig = plt.figure()
+    wind1 = fig.add_subplot(1, 1, 1)
+    wind1.grid()
+    wind1.set_xlim(min_x, max_x)
+    wind1.set_ylim(min_y, max_y)
+    wind1.set_xticks(np.arange(0, 13, 4))
+    wind1.set_yticks(np.arange(0, 13, 4))
+
+    # エッジサーバの作成
+    all_edge = util.read_edge(edge_file)
+    edge_x = np.zeros(num_edge)
+    edge_y = np.zeros(num_edge)
+
+    for edge in all_edge:
+        edge_x[int(edge.id)] = edge.x
+        edge_y[int(edge.id)] = edge.y
+
+    imgs = []
+
+    for t in range(0, simulation_time, time_step):
+        #  各タイムステップにおけるクライアントの座標を格納
+        #  クライアント全体の分布
+        x_list = []
+        y_list = []
+        #  各 topic の分布
+        pub_x_list = [[] for _ in range(num_topic)]
+        pub_y_list = [[] for _ in range(num_topic)]
+        sub_x_list = [[] for _ in range(num_topic)]
+        sub_y_list = [[] for _ in range(num_topic)]
+        pub_sub_x_list = [[] for _ in range(num_topic)]
+        pub_sub_y_list = [[] for _ in range(num_topic)]
+        line_list = [[] for _ in range(num_topic)]
+
+        for id in range(num_client):
+            data = data_set.pop(0)
+
+            x_list.append(data.x)
+            y_list.append(data.y)
+
+            for n in range(num_topic):
+                if data.pub_edge[n] != -1 and data.sub_edge[n] != -1:
+                    pub_sub_x_list[n].append(data.x)
+                    pub_sub_y_list[n].append(data.y)
+                    
+                    if data.pub_edge[n] == data.sub_edge[n]:
+                        line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
+                        line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "purple"])
+                    else:
+                        line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
+                        line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge[n]].x, all_edge[data.sub_edge[n]].y), "blue"])
+                elif data.pub_edge[n] != -1 and data.sub_edge[n] == -1:
+                    pub_x_list[n].append(data.x)
+                    pub_y_list[n].append(data.y)
+
+                    line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
+                elif data.pub_edge[n] == -1 and data.sub_edge[n] != -1:
+                    sub_x_list[n].append(data.x)
+                    sub_y_list[n].append(data.y)
+
+                    line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge[n]].x, all_edge[data.sub_edge[n]].y), "blue"])
+                
+
+        img_publisher1 = wind1.scatter(pub_x_list[0], pub_y_list[0], c="red")
+        img_subscriber1 = wind1.scatter(sub_x_list[0], sub_y_list[0], c="blue")
+        img_pub_sub1 = wind1.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
+        img_edge1 = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+
+        img_list = [img_publisher1, img_subscriber1, img_pub_sub1, img_edge1]
+
+        for line in line_list[0]:
+            img_list.extend(wind1.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color=line[2]))
+        
         imgs.append(img_list)
 
     ani = animation.ArtistAnimation(fig, imgs, interval=1)
