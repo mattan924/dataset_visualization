@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
 import pandas as pd
-
+import queue
+import sys
 
 # トラッキング情報のアニメーション化
 def create_traking_animation(index_file, out_file, FPS=20):
@@ -296,6 +297,7 @@ def create_single_assign_animation(index_file, out_file, FPS):
     config_file = df_index.at['data', 'config_file']
     data_file = df_index.at['data', 'solve_file']
     edge_file = df_index.at['data', 'edge_file']
+    topic_file = df_index.at['data', 'topic_file']
 
     parameter = util.read_config(config_file)
 
@@ -322,12 +324,11 @@ def create_single_assign_animation(index_file, out_file, FPS):
 
     # エッジサーバの作成
     all_edge = util.read_edge(edge_file)
-    edge_x = np.zeros(num_edge)
-    edge_y = np.zeros(num_edge)
 
-    for edge in all_edge:
-        edge_x[edge.id] = edge.x
-        edge_y[edge.id] = edge.y
+    all_topic = util.read_topic(topic_file)
+
+    num_publisher_queue = [queue.Queue() for _ in range(num_topic)]
+    total_num_client = np.zeros(num_topic)
 
     imgs = []
 
@@ -341,6 +342,9 @@ def create_single_assign_animation(index_file, out_file, FPS):
         pub_sub_y_list = [[] for i in range(1)]
         line_list = []
 
+        edge_used_topic = np.zeros((num_edge, num_topic))
+        num_publisher = np.zeros(num_topic)
+
         for id in range(num_client):
             data = data_set.pop(0)
 
@@ -349,6 +353,9 @@ def create_single_assign_animation(index_file, out_file, FPS):
                 if data.pub_edge[n] != -1 and data.sub_edge != -1:
                     pub_sub_x_list[n].append(data.x)
                     pub_sub_y_list[n].append(data.y)
+
+                    edge_used_topic[data.pub_edge[n]][n] = 1
+                    num_publisher[n] += 1
                     
                     if data.pub_edge[n] == data.sub_edge:
                         line_list.append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "purple"])
@@ -356,6 +363,10 @@ def create_single_assign_animation(index_file, out_file, FPS):
                         line_list.append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
                         line_list.append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
                 elif data.pub_edge[n] != -1:
+
+                    edge_used_topic[data.pub_edge[n]][n] = 1
+                    num_publisher[n] += 1
+
                     pub_x_list[n].append(data.x)
                     pub_y_list[n].append(data.y)
 
@@ -366,13 +377,45 @@ def create_single_assign_animation(index_file, out_file, FPS):
 
                     line_list.append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
 
+        for n in range(num_topic):
+            if num_publisher_queue[n].qsize() < all_topic[n].save_period/time_step:
+                num_publisher_queue[n].put(num_publisher[n])
+                total_num_client[n] = total_num_client[n] + num_publisher[n]
+            elif num_publisher_queue[n].qsize() == all_topic[n].save_period/time_step:
+                old_num_client = num_publisher_queue[n].get()
+                num_publisher_queue[n].put(num_publisher[n])
+                total_num_client[n] = total_num_client[n] + num_publisher[n] - old_num_client
+            else:
+                sys.exit("save_period が time_step の整数倍になっていません")
+
+        normal_edge_x = []
+        normal_edge_y = []
+        over_edge_x = []
+        over_edge_y = []
+
+        for idx in range(num_edge):
+            edge = all_edge[idx]
+            used_volume = np.zeros(num_topic)
+            for n in range(num_topic):
+                topic = all_topic[n]
+                used_volume[n] = topic.data_size * topic.publish_rate * time_step * total_num_client[n] * edge_used_topic[idx][n]
+            
+            if edge.volume >= sum(used_volume):
+                normal_edge_x.append(edge.x)
+                normal_edge_y.append(edge.y)
+            else:
+                over_edge_x.append(edge.x)
+                over_edge_y.append(edge.y)
+
         my_title = wind1.text(5.5, 13, 'time : {}'.format(t))
         img_publisher = wind1.scatter(pub_x_list[n], pub_y_list[n], c="red")
         img_subscriber = wind1.scatter(sub_x_list[n], sub_y_list[n], c="blue")
         img_pub_sub = wind1.scatter(pub_sub_x_list[n], pub_sub_y_list[n], c="purple")
-        img_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
+        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="orange", marker="s")
 
-        img_list = [my_title, img_publisher, img_subscriber, img_pub_sub, img_edge]
+
+        img_list = [my_title, img_publisher, img_subscriber, img_pub_sub, img_normal_edge, img_over_edge]
 
         for line in line_list:
             img_list.extend(wind1.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color=line[2]))
@@ -392,6 +435,7 @@ def create_assign_animation(index_file, out_file, FPS):
     config_file = df_index.at['data', 'config_file']
     data_file = df_index.at['data', 'solve_file']
     edge_file = df_index.at['data', 'edge_file']
+    topic_file = df_index.at['data', 'topic_file']
 
     parameter = util.read_config(config_file)
 
@@ -436,12 +480,11 @@ def create_assign_animation(index_file, out_file, FPS):
 
     # エッジサーバの作成
     all_edge = util.read_edge(edge_file)
-    edge_x = np.zeros(num_edge)
-    edge_y = np.zeros(num_edge)
 
-    for edge in all_edge:
-        edge_x[edge.id] = edge.x
-        edge_y[edge.id] = edge.y
+    all_topic = util.read_topic(topic_file)
+
+    num_publisher_queue = [queue.Queue() for _ in range(num_topic)]
+    total_num_client = np.zeros(num_topic)
 
     imgs = []
 
@@ -459,6 +502,9 @@ def create_assign_animation(index_file, out_file, FPS):
         pub_sub_y_list = [[] for _ in range(num_topic)]
         line_list = [[] for _ in range(num_topic)]
 
+        edge_used_topic = np.zeros((num_edge, num_topic))
+        num_publisher = np.zeros(num_topic)
+
         for id in range(num_client):
             data = data_set.pop(0)
 
@@ -469,14 +515,21 @@ def create_assign_animation(index_file, out_file, FPS):
                 if data.pub_edge[n] != -1 and data.sub_edge[n] != -1:
                     pub_sub_x_list[n].append(data.x)
                     pub_sub_y_list[n].append(data.y)
+
+                    edge_used_topic[data.pub_edge[n]][n] = 1
+                    num_publisher[n] += 1
                     
                     if data.pub_edge[n] == data.sub_edge[n]:
                         line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
                         line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "purple"])
                     else:
                         line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
-                        line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
+                        line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge[n]].x, all_edge[data.sub_edge[n]].y), "blue"])
                 elif data.pub_edge[n] != -1 and data.sub_edge[n] == -1:
+
+                    edge_used_topic[data.pub_edge[n]][n] = 1
+                    num_publisher[n] += 1
+
                     pub_x_list[n].append(data.x)
                     pub_y_list[n].append(data.y)
 
@@ -485,28 +538,63 @@ def create_assign_animation(index_file, out_file, FPS):
                     sub_x_list[n].append(data.x)
                     sub_y_list[n].append(data.y)
 
-                    line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
+                    line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge[n]].x, all_edge[data.sub_edge[n]].y), "blue"])
+
+        for n in range(num_topic):
+            if num_publisher_queue[n].qsize() < all_topic[n].save_period/time_step:
+                num_publisher_queue[n].put(num_publisher[n])
+                total_num_client[n] = total_num_client[n] + num_publisher[n]
+            elif num_publisher_queue[n].qsize() == all_topic[n].save_period/time_step:
+                old_num_client = num_publisher_queue[n].get()
+                num_publisher_queue[n].put(num_publisher[n])
+                total_num_client[n] = total_num_client[n] + num_publisher[n] - old_num_client
+            else:
+                sys.exit("save_period が time_step の整数倍になっていません")
+
+        normal_edge_x = []
+        normal_edge_y = []
+        over_edge_x = []
+        over_edge_y = []
+
+        for idx in range(num_edge):
+            edge = all_edge[idx]
+            used_volume = np.zeros(num_topic)
+            for n in range(num_topic):
+                topic = all_topic[n]
+                used_volume[n] = topic.data_size * topic.publish_rate * time_step * total_num_client[n] * edge_used_topic[idx][n]
+            
+            if edge.volume >= sum(used_volume):
+                normal_edge_x.append(edge.x)
+                normal_edge_y.append(edge.y)
+            else:
+                over_edge_x.append(edge.x)
+                over_edge_y.append(edge.y)
+
 
         my_title = wind1.text(13, 13, 'time : {}'.format(t))
         client_dist = wind1.scatter(x_list, y_list, c="black")
-        img_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
+        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="orange", marker="s")
 
         img_publisher1 = wind2.scatter(pub_x_list[0], pub_y_list[0], c="red")
         img_subscriber1 = wind2.scatter(sub_x_list[0], sub_y_list[0], c="blue")
         img_pub_sub1 = wind2.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
-        img_edge1 = wind2.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img_normal_edge1 = wind2.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
+        img_over_edge1 = wind2.scatter(over_edge_x, over_edge_y, s=20, c="orange", marker="s")
 
         img_publisher2 = wind3.scatter(pub_x_list[1], pub_y_list[1], c="red")
         img_subscriber2 = wind3.scatter(sub_x_list[1], sub_y_list[1], c="blue")
         img_pub_sub2 = wind3.scatter(pub_sub_x_list[1], pub_sub_y_list[1], c="purple")
-        img_edge2 = wind3.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img_normal_edge2 = wind3.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
+        img_over_edge2 = wind3.scatter(over_edge_x, over_edge_y, s=20, c="orange", marker="s")
 
         img_publisher3 = wind4.scatter(pub_x_list[2], pub_y_list[2], c="red")
         img_subscriber3 = wind4.scatter(sub_x_list[2], sub_y_list[2], c="blue")
         img_pub_sub3 = wind4.scatter(pub_sub_x_list[2], pub_sub_y_list[2], c="purple")
-        img_edge3 = wind4.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img_normal_edge3 = wind4.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
+        img_over_edge3 = wind4.scatter(over_edge_x, over_edge_y, s=20, c="orange", marker="s")
 
-        img_list = [my_title, client_dist, img_edge, img_publisher1, img_subscriber1, img_pub_sub1, img_edge1, img_publisher2, img_subscriber2, img_pub_sub2, img_edge2, img_publisher3, img_subscriber3, img_pub_sub3, img_edge3]
+        img_list = [my_title, client_dist, img_normal_edge, img_over_edge, img_publisher1, img_subscriber1, img_pub_sub1, img_normal_edge1, img_over_edge1, img_publisher2, img_subscriber2, img_pub_sub2, img_normal_edge2, img_over_edge2, img_publisher3, img_subscriber3, img_pub_sub3, img_normal_edge3, img_over_edge3]
 
         for line in line_list[0]:
             img_list.extend(wind2.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color=line[2]))
@@ -531,6 +619,7 @@ def create_opt_animation(index_file, out_file, opt_solution, FPS):
 
     config_file = df_index.at['data', 'config_file']
     edge_file = df_index.at['data', 'edge_file']
+    topic_file = df_index.at['data', 'topic_file']
 
     parameter = util.read_config(config_file)
 
@@ -575,12 +664,11 @@ def create_opt_animation(index_file, out_file, opt_solution, FPS):
 
     # エッジサーバの作成
     all_edge = util.read_edge(edge_file)
-    edge_x = np.zeros(num_edge)
-    edge_y = np.zeros(num_edge)
 
-    for edge in all_edge:
-        edge_x[int(edge.id)] = edge.x
-        edge_y[int(edge.id)] = edge.y
+    all_topic = util.read_topic(topic_file)
+
+    num_publisher_queue = [queue.Queue() for _ in range(num_topic)]
+    total_num_client = np.zeros(num_topic)
 
     imgs = []
 
@@ -598,6 +686,9 @@ def create_opt_animation(index_file, out_file, opt_solution, FPS):
         pub_sub_y_list = [[] for _ in range(num_topic)]
         line_list = [[] for _ in range(num_topic)]
 
+        edge_used_topic = np.zeros((num_edge, num_topic))
+        num_publisher = np.zeros(num_topic)
+
         for id in range(num_client):
             data = data_set.pop(0)
 
@@ -608,6 +699,9 @@ def create_opt_animation(index_file, out_file, opt_solution, FPS):
                 if data.pub_edge[n] != -1 and data.sub_edge[n] != -1:
                     pub_sub_x_list[n].append(data.x)
                     pub_sub_y_list[n].append(data.y)
+
+                    edge_used_topic[data.pub_edge[n]][n] = 1
+                    num_publisher[n] += 1
                     
                     if data.pub_edge[n] == data.sub_edge[n]:
                         line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
@@ -619,33 +713,70 @@ def create_opt_animation(index_file, out_file, opt_solution, FPS):
                     pub_x_list[n].append(data.x)
                     pub_y_list[n].append(data.y)
 
+                    edge_used_topic[data.pub_edge[n]][n] = 1
+                    num_publisher[n] += 1
+
                     line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
                 elif data.pub_edge[n] == -1 and data.sub_edge[n] != -1:
                     sub_x_list[n].append(data.x)
                     sub_y_list[n].append(data.y)
 
                     line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge[n]].x, all_edge[data.sub_edge[n]].y), "blue"])
+
+        for n in range(num_topic):
+            if num_publisher_queue[n].qsize() < all_topic[n].save_period/time_step:
+                num_publisher_queue[n].put(num_publisher[n])
+                total_num_client[n] = total_num_client[n] + num_publisher[n]
+            elif num_publisher_queue[n].qsize() == all_topic[n].save_period/time_step:
+                old_num_client = num_publisher_queue[n].get()
+                num_publisher_queue[n].put(num_publisher[n])
+                total_num_client[n] = total_num_client[n] + num_publisher[n] - old_num_client
+            else:
+                sys.exit("save_period が time_step の整数倍になっていません")
+
+        normal_edge_x = []
+        normal_edge_y = []
+        over_edge_x = []
+        over_edge_y = []
+
+        for idx in range(num_edge):
+            edge = all_edge[idx]
+            used_volume = np.zeros(num_topic)
+            for n in range(num_topic):
+                topic = all_topic[n]
+                used_volume[n] = topic.data_size * topic.publish_rate * time_step * total_num_client[n] * edge_used_topic[idx][n]
+            
+            if edge.volume >= sum(used_volume):
+                normal_edge_x.append(edge.x)
+                normal_edge_y.append(edge.y)
+            else:
+                over_edge_x.append(edge.x)
+                over_edge_y.append(edge.y)
                 
         my_title = wind1.text(11, 13, 'time : {}'.format(t))
         client_dist = wind1.scatter(x_list, y_list, c="black")
-        img_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
+        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="orange", marker="s")
 
         img_publisher1 = wind2.scatter(pub_x_list[0], pub_y_list[0], c="red")
         img_subscriber1 = wind2.scatter(sub_x_list[0], sub_y_list[0], c="blue")
         img_pub_sub1 = wind2.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
-        img_edge1 = wind2.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img_normal_edge1 = wind2.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
+        img_over_edge1 = wind2.scatter(over_edge_x, over_edge_y, s=20, c="orange", marker="s")
 
         img_publisher2 = wind3.scatter(pub_x_list[1], pub_y_list[1], c="red")
         img_subscriber2 = wind3.scatter(sub_x_list[1], sub_y_list[1], c="blue")
         img_pub_sub2 = wind3.scatter(pub_sub_x_list[1], pub_sub_y_list[1], c="purple")
-        img_edge2 = wind3.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img_normal_edge2 = wind3.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
+        img_over_edge2 = wind3.scatter(over_edge_x, over_edge_y, s=20, c="orange", marker="s")
 
         img_publisher3 = wind4.scatter(pub_x_list[2], pub_y_list[2], c="red")
         img_subscriber3 = wind4.scatter(sub_x_list[2], sub_y_list[2], c="blue")
         img_pub_sub3 = wind4.scatter(pub_sub_x_list[2], pub_sub_y_list[2], c="purple")
-        img_edge3 = wind4.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img_normal_edge3 = wind4.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
+        img_over_edge3 = wind4.scatter(over_edge_x, over_edge_y, s=20, c="orange", marker="s")
 
-        img_list = [my_title, client_dist, img_edge, img_publisher1, img_subscriber1, img_pub_sub1, img_edge1, img_publisher2, img_subscriber2, img_pub_sub2, img_edge2, img_publisher3, img_subscriber3, img_pub_sub3, img_edge3]
+        img_list = [my_title, client_dist, img_normal_edge, img_over_edge, img_publisher1, img_subscriber1, img_pub_sub1, img_normal_edge1, img_over_edge1, img_publisher2, img_subscriber2, img_pub_sub2, img_normal_edge2, img_over_edge2, img_publisher3, img_subscriber3, img_pub_sub3, img_normal_edge3, img_over_edge3]
 
         for line in line_list[0]:
             img_list.extend(wind2.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color=line[2]))
@@ -670,6 +801,7 @@ def create_opt_animation_onetopic(index_file, out_file, opt_solution, FPS):
 
     config_file = df_index.at['data', 'config_file']
     edge_file = df_index.at['data', 'edge_file']
+    topic_file = df_index.at['data', 'topic_file']
 
     parameter = util.read_config(config_file)
 
@@ -696,12 +828,11 @@ def create_opt_animation_onetopic(index_file, out_file, opt_solution, FPS):
 
     # エッジサーバの作成
     all_edge = util.read_edge(edge_file)
-    edge_x = np.zeros(num_edge)
-    edge_y = np.zeros(num_edge)
 
-    for edge in all_edge:
-        edge_x[int(edge.id)] = edge.x
-        edge_y[int(edge.id)] = edge.y
+    all_topic = util.read_topic(topic_file)
+
+    num_publisher_queue = [queue.Queue() for _ in range(num_topic)]
+    total_num_client = np.zeros(num_topic)
 
     imgs = []
 
@@ -719,6 +850,9 @@ def create_opt_animation_onetopic(index_file, out_file, opt_solution, FPS):
         pub_sub_y_list = [[] for _ in range(num_topic)]
         line_list = [[] for _ in range(num_topic)]
 
+        edge_used_topic = np.zeros((num_edge, num_topic))
+        num_publisher = np.zeros(num_topic)
+
         for id in range(num_client):
             data = data_set.pop(0)
 
@@ -729,6 +863,9 @@ def create_opt_animation_onetopic(index_file, out_file, opt_solution, FPS):
                 if data.pub_edge[n] != -1 and data.sub_edge[n] != -1:
                     pub_sub_x_list[n].append(data.x)
                     pub_sub_y_list[n].append(data.y)
+
+                    edge_used_topic[data.pub_edge[n]][n] = 1
+                    num_publisher[n] += 1
                     
                     if data.pub_edge[n] == data.sub_edge[n]:
                         line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
@@ -740,20 +877,53 @@ def create_opt_animation_onetopic(index_file, out_file, opt_solution, FPS):
                     pub_x_list[n].append(data.x)
                     pub_y_list[n].append(data.y)
 
+                    edge_used_topic[data.pub_edge[n]][n] = 1
+                    num_publisher[n] += 1
+
                     line_list[n].append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
                 elif data.pub_edge[n] == -1 and data.sub_edge[n] != -1:
                     sub_x_list[n].append(data.x)
                     sub_y_list[n].append(data.y)
 
                     line_list[n].append([(data.x, data.y), (all_edge[data.sub_edge[n]].x, all_edge[data.sub_edge[n]].y), "blue"])
-                
+
+        for n in range(num_topic):
+            if num_publisher_queue[n].qsize() < all_topic[n].save_period/time_step:
+                num_publisher_queue[n].put(num_publisher[n])
+                total_num_client[n] = total_num_client[n] + num_publisher[n]
+            elif num_publisher_queue[n].qsize() == all_topic[n].save_period/time_step:
+                old_num_client = num_publisher_queue[n].get()
+                num_publisher_queue[n].put(num_publisher[n])
+                total_num_client[n] = total_num_client[n] + num_publisher[n] - old_num_client
+            else:
+                sys.exit("save_period が time_step の整数倍になっていません")
+
+        normal_edge_x = []
+        normal_edge_y = []
+        over_edge_x = []
+        over_edge_y = []
+
+        for idx in range(num_edge):
+            edge = all_edge[idx]
+            used_volume = np.zeros(num_topic)
+            for n in range(num_topic):
+                topic = all_topic[n]
+                used_volume[n] = topic.data_size * topic.publish_rate * time_step * total_num_client[n] * edge_used_topic[idx][n]
+            
+            if edge.volume >= sum(used_volume):
+                normal_edge_x.append(edge.x)
+                normal_edge_y.append(edge.y)
+            else:
+                over_edge_x.append(edge.x)
+                over_edge_y.append(edge.y)                
 
         img_publisher1 = wind1.scatter(pub_x_list[0], pub_y_list[0], c="red")
         img_subscriber1 = wind1.scatter(sub_x_list[0], sub_y_list[0], c="blue")
         img_pub_sub1 = wind1.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
-        img_edge1 = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
+        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="orange", marker="s")
 
-        img_list = [img_publisher1, img_subscriber1, img_pub_sub1, img_edge1]
+        img_list = [img_publisher1, img_subscriber1, img_pub_sub1, img_normal_edge, img_over_edge]
 
         for line in line_list[0]:
             img_list.extend(wind1.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], color=line[2]))
