@@ -311,7 +311,7 @@ def create_single_assign_animation(index_file, out_file, FPS):
     simulation_time = parameter['simulation_time']
     time_step = parameter['time_step']
 
-    data_set = util.read_data_set_solution(data_file, config_file)
+    data_set = util.read_data_set_solution(data_file, num_topic)
 
     # 描画領域の設定
     fig = plt.figure()
@@ -350,18 +350,18 @@ def create_single_assign_animation(index_file, out_file, FPS):
 
             # 実際に使う時には要修正
             for n in range(num_topic):
-                if data.pub_edge[n] != -1 and data.sub_edge != -1:
+                if data.pub_edge[n] != -1 and data.sub_edge[n] != -1:
                     pub_sub_x_list[n].append(data.x)
                     pub_sub_y_list[n].append(data.y)
 
                     edge_used_topic[data.pub_edge[n]][n] = 1
                     num_publisher[n] += 1
                     
-                    if data.pub_edge[n] == data.sub_edge:
+                    if data.pub_edge[n] == data.sub_edge[n]:
                         line_list.append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "purple"])
                     else:
                         line_list.append([(data.x, data.y), (all_edge[data.pub_edge[n]].x, all_edge[data.pub_edge[n]].y), "red"])
-                        line_list.append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
+                        line_list.append([(data.x, data.y), (all_edge[data.sub_edge[n]].x, all_edge[data.sub_edge[n]].y), "blue"])
                 elif data.pub_edge[n] != -1:
 
                     edge_used_topic[data.pub_edge[n]][n] = 1
@@ -375,7 +375,7 @@ def create_single_assign_animation(index_file, out_file, FPS):
                     sub_x_list[n].append(data.x)
                     sub_y_list[n].append(data.y)
 
-                    line_list.append([(data.x, data.y), (all_edge[data.sub_edge].x, all_edge[data.sub_edge].y), "blue"])
+                    line_list.append([(data.x, data.y), (all_edge[data.sub_edge[n]].x, all_edge[data.sub_edge[n]].y), "blue"])
 
         for n in range(num_topic):
             if num_publisher_queue[n].qsize() < all_topic[n].save_period/time_step:
@@ -412,7 +412,7 @@ def create_single_assign_animation(index_file, out_file, FPS):
         img_subscriber = wind1.scatter(sub_x_list[n], sub_y_list[n], c="blue")
         img_pub_sub = wind1.scatter(pub_sub_x_list[n], pub_sub_y_list[n], c="purple")
         img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
-        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="darkdarkorange", marker="s")
+        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
 
 
         img_list = [my_title, img_publisher, img_subscriber, img_pub_sub, img_normal_edge, img_over_edge]
@@ -571,7 +571,7 @@ def create_assign_animation(index_file, out_file, FPS):
                 over_edge_y.append(edge.y)
 
 
-        my_title = wind1.text(13, 13, 'time : {}'.format(t))
+        my_title = wind1.text(11, 13.5, 'time : {}'.format(t))
         client_dist = wind1.scatter(x_list, y_list, c="black")
         img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
         img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
@@ -921,7 +921,7 @@ def create_opt_animation_onetopic(index_file, out_file, opt_solution, FPS):
         img_subscriber1 = wind1.scatter(sub_x_list[0], sub_y_list[0], c="blue")
         img_pub_sub1 = wind1.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
         img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
-        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="darkdarkorange", marker="s")
+        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
 
         img_list = [img_publisher1, img_subscriber1, img_pub_sub1, img_normal_edge, img_over_edge]
 
