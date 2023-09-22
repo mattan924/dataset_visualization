@@ -125,7 +125,7 @@ generator.py の `generte_traking(index_file, config_file, out_file, seed=0)` �
 | 第 3 引数 |  out_file   |     無し     |    出力先ファイルのパス    |
 | 第 4 引数 |    seed     |      0       |       乱数のシード値       |
 
-seed 値を引数に与えない場合のデフォルト値は 0 になっており、この場合 seed 値はランダムに決められ、データは生成される。また使用された seed 値は index_file に記録されるため後で確認することができ、この seed 値を第 4 引数に与えることで再現することができる。
+seed 値を引数に与えない場合のデフォルト値は 0 になっており、この場合 seed 値はランダムに決められ、データが生成される。また使用された seed 値は index_file に記録されるため後で確認することができ、この seed 値を第 4 引数に与えることで再現することができる。
 
 指定された index_file のパスが存在しない場合、内部で `create_index_file` が自動的に呼び出されるため事前に index_file を作成する必要はない。
 
@@ -226,7 +226,7 @@ animation.py の `create_topic_animation(index_file, out_file, FPS)` という�
 |     id    |  各クライアントの固有のID  |
 |     x     |     現在の x 座標     |
 |     y     |     現在の y 座標     |
-| pub_topic | 各 topic をpublish しているかどうか |
+| pub_topic | 各 topic を publish しているかどうか |
 | sub_topic | 各 topic を subscribe しているかどうか    |
 
 また、トラッキングデータに対して pub/sub 関係を割り当てる際に使用する `select_topic` というメソッドを持つ
@@ -267,7 +267,7 @@ pub/sub 関係付きトラッキングデータを扱うためのクラス
 |    time   |          時刻           |
 |     x     |         x 座標         |
 |     y     |         y 座標         |
-| pub_topic | 各 topic をpublish しているかどうか |
+| pub_topic | 各 topic を publish しているかどうか |
 | sub_topic | 各 topic を subscribe しているかどうか    |
 
 このクラスは、pub/sub 関係つきトラッキングデータを保存するファイルで一行に書き込まれる情報に対応する。
@@ -301,7 +301,7 @@ pub_topic[0] = True
 
 また、publish 先のエッジサーバは topic ごとに決定するが、subscribe するサーバは全ての topic で同じサーバを選択する。
 
-`id = 0` の topic を `id=3` のエッジサーバに publish する場合では `pub_topic[0] = 3` となる。一方、subscribe 先のサーバは全ての topic で共通であるため、`id = 1` のサーバから subscribe する場合 `sub_topic = 1` となる。
+`id = 0` の topic を `id = 3` のエッジサーバに publish する場合では `pub_topic[0] = 3` となる。一方、subscribe 先のサーバは全ての topic で共通であるため、`id = 1` のサーバから subscribe する場合 `sub_topic = 1` となる。
 
 ## edge.py
 
@@ -338,11 +338,12 @@ edge = Edge(0, 8.5, 8.5, 1000, 10000)
 | require_cycle | 1メッセージを処理するのに必要なクロック数  |
 
 `__init__` メソッドにおいて `publish_rate`, `data_size`, `require_cycle` が `None` で与えられた場合、
-ランダムな値が設定される。`publish_rate` は 0.1~10 の値となり、`data_size` は 1~256(これは MQTT の最大データサイズ)
+ランダムな値が設定される。`publish_rate` は 0.1~10 の値となり、`data_size` は 1~256*1e-6 (これは MQTT の最大データサイズ)
 `require_cycle` は 1e4~1e5なる。
 
 `init_topic`, `update` は `@abstractclassmethod` デコレータと付けられており、`Topic` クラスを継承する全てのクラスで実装する必要がる。
-`init_topic` メソッドは、各クライアントが初期にその topic を pub/sub するのかを決定するためのメソッドあり、`update` メソッドは
+`init_topic` メソッドは、各クライアントが初期にその topic を pub/sub するのかを決定するためのメソッドあり、`update` メソッドを挟むことで
+Topic ごとの特徴の差を吸収する。
 
 ### TopicUniform クラス
 

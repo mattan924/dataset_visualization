@@ -17,7 +17,7 @@ class ClientTraking:
 
     # time_step : 何秒後の位置を求めるか
     def random_walk(self, time_step, min_x, max_x, min_y, max_y):
-        speed = random.gauss(self.speed, 10)
+        self.speed = random.gauss(self.speed, 10)
 
         tmp = random.uniform(0, 100)
 
@@ -37,8 +37,8 @@ class ClientTraking:
             self.direction = 360 - (0 - self.direction)%360
 
         # 位置の更新
-        self.x = self.x + ((speed/3600)*time_step)*math.cos(math.radians(self.direction))
-        self.y = self.y + ((speed/3600)*time_step)*math.sin(math.radians(self.direction))
+        self.x = self.x + ((self.speed/3600)*time_step)*math.cos(math.radians(self.direction))
+        self.y = self.y + ((self.speed/3600)*time_step)*math.sin(math.radians(self.direction))
 
         # 領域外に出ないように調整
         if self.x > max_x:
