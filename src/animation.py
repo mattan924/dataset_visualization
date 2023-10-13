@@ -80,7 +80,7 @@ def create_traking_animation(index_file, out_file, FPS=20):
 
 
 # 2×2のウィンドウで3種類のトピックを持つアニメーションの生成
-def create_topic_animation(index_file, out_file, FPS):
+def create_topic_animation(index_file, out_file, FPS=20):
     # インデックスファイルの読み込み
     df_index = pd.read_csv(index_file, index_col=0)
 
@@ -291,7 +291,7 @@ def create_single_topic_animation(index_file, out_file, FPS=20):
 
 
 # 割り当て付きの分布の可視化
-def create_single_assign_animation(index_file, out_file, FPS):
+def create_single_assign_animation(index_file, out_file, FPS=20):
     df_index = pd.read_csv(index_file, index_col=0)
 
     config_file = df_index.at['data', 'config_file']
@@ -429,7 +429,7 @@ def create_single_assign_animation(index_file, out_file, FPS):
 
 
 # 割り当て付きの分布の可視化
-def create_assign_animation(index_file, out_file, FPS):
+def create_assign_animation(index_file, out_file, FPS=20):
     df_index = pd.read_csv(index_file, index_col=0)
 
     config_file = df_index.at['data', 'config_file']
@@ -614,7 +614,7 @@ def create_assign_animation(index_file, out_file, FPS):
 
 
 # 割り当て付きの分布の可視化
-def create_opt_animation(index_file, out_file, opt_solution, FPS):
+def create_opt_animation(index_file, out_file, opt_solution, FPS=20):
     df_index = pd.read_csv(index_file, index_col=0)
 
     config_file = df_index.at['data', 'config_file']
@@ -796,7 +796,7 @@ def create_opt_animation(index_file, out_file, opt_solution, FPS):
 
 
 # 割り当て付きの分布の可視化
-def create_opt_animation_onetopic(index_file, out_file, opt_solution, FPS):
+def create_single_opt_animation(index_file, out_file, opt_solution, FPS):
     df_index = pd.read_csv(index_file, index_col=0)
 
     config_file = df_index.at['data', 'config_file']

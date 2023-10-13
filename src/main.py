@@ -27,15 +27,15 @@ def create_data_set(data_set_size, index_file_base, config_file, traking_file_ba
 
 
 
-index_file_base = "../../reinforcement_learning/dataset/debug/easy/train/index/index_easy"
-config_file = "../../reinforcement_learning/dataset/debug/easy/train/config/config_easy.csv"
-traking_file_base = "../../reinforcement_learning/dataset/debug/easy/train/traking/traking_easy"
-assign_file_base = "../../reinforcement_learning/dataset/debug/easy/train/assign/assign_easy"
-edge_file_base = "../../reinforcement_learning/dataset/debug/easy/train/edge/edge_easy"
-topic_file_base = "../../reinforcement_learning/dataset/debug/easy/train/topic/topic_easy"
-animation_file_base = "../../reinforcement_learning/dataset/debug/easy/train/animation/animation_easy"
+index_file_base = "../../reinforcement_learning/dataset/data_set_hard/test/index/index_hard"
+config_file = "../../reinforcement_learning/dataset/data_set_hard/test/config/config_hard.csv"
+traking_file_base = "../../reinforcement_learning/dataset/data_set_hard/test/traking/traking_hard"
+assign_file_base = "../../reinforcement_learning/dataset/data_set_hard/test/assign/assign_hard"
+edge_file_base = "../../reinforcement_learning/dataset/data_set_hard/test/edge/edge_hard"
+topic_file_base = "../../reinforcement_learning/dataset/data_set_hard/test/topic/topic_hard"
+#animation_file_base = "../../reinforcement_learning/dataset/data_set_hard/test/animation/animation_hard"
 
-dataset_size = 100
+dataset_size = 10
 
 
 create_data_set(dataset_size, index_file_base, config_file, traking_file_base, assign_file_base, edge_file_base, topic_file_base)
