@@ -86,7 +86,7 @@ def assign_topic(index_file, out_file, seed=0):
         if not os.path.exists(traking_file):
             sys.exit("traking_file is not exist. Generate traking_file in advance.")
 
-        # シード値をした場合
+        # シード値を指定した場合
         if seed != 0:
             random.seed(seed)
         # シード値を指定しない場合、ランダムにシード値を決定
@@ -168,14 +168,23 @@ def assign_topic(index_file, out_file, seed=0):
 
 
 # エッジサーバの生成
-def generate_edge(index_file, config_file, out_file):
+def generate_edge(index_file, config_file, out_file, seed=0):
     # インデックスファイルが存在しない場合、生成する
     if not os.path.exists(index_file):
         util.create_index_file(index_file, config_file)
 
+    # シード値を指定した場合
+    if seed != 0:
+        random.seed(seed)
+    # シード値を指定しない場合、ランダムにシード値を決定
+    else:
+        seed = random.randint(1, 100000000)
+        random.seed(seed)
+
     # インデックスファイルの読み込み、更新
     df_index = pd.read_csv(index_file, index_col=0, dtype=str)
     df_index.at['data', 'edge_file'] = out_file
+    df_index.at['data', 'edge_seed'] = seed
 
     df_index.to_csv(index_file)
 
@@ -194,20 +203,46 @@ def generate_edge(index_file, config_file, out_file):
             id = i*3+j
             x = 2 + 4*j
             y = 2 + 4*i
-            all_edge.append(Edge(id, x, y, volume, cpu_cycle))
+
+            tmp = random.randint(0, 2)
+            if tmp == 0:
+                volume_tmp = volume * 1
+            elif tmp == 1:
+                volume_tmp = volume * 1.25
+            else:
+                volume_tmp = volume * 0.75
+
+            tmp = random.randint(0, 2)
+            if tmp == 0:
+                cpu_cycle_tmp = cpu_cycle * 1
+            elif tmp == 1:
+                cpu_cycle_tmp = cpu_cycle * 1.25
+            else:
+                cpu_cycle_tmp = cpu_cycle * 0.75
+            
+            all_edge.append(Edge(id, x, y, volume_tmp, cpu_cycle_tmp))
     
     util.write_edge_csv(out_file, all_edge)
 
 
 # トピックの生成
-def generate_topic(index_file, config_file, out_file):
+def generate_topic(index_file, config_file, out_file, seed=0):
     # インデックスファイルが存在しない場合、生成する
     if not os.path.exists(index_file):
         util.create_index_file(index_file, config_file)
 
+    # シード値を指定した場合
+    if seed != 0:
+        random.seed(seed)
+    # シード値を指定しない場合、ランダムにシード値を決定
+    else:
+        seed = random.randint(1, 100000000)
+        random.seed(seed)
+
     # インデックスファイルの読み込み、更新
     df_index = pd.read_csv(index_file, index_col=0, dtype=str)
     df_index.at['data', 'topic_file'] = out_file
+    df_index.at['data', 'topic_seed'] = seed
 
     df_index.to_csv(index_file)
     
