@@ -21,7 +21,7 @@ class Topic(metaclass = ABCMeta):
             self.data_size = data_size
 
         if require_cycle == None:
-            self.require_cycle = random.randint(4e5, 4e6) / 1e9
+            self.require_cycle = random.randint(5e5, 5e6) / 1e9
         else:
             self.require_cycle = require_cycle
 
