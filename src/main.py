@@ -109,12 +109,12 @@ def create_similar_dataset(traking_data_size, assign_data_size, edge_data_size, 
         print(f"{(count / test_data_size)*100} data is move to test dir")
 
 
-train_dir = "../../reinforcement_learning/dataset/similar_dataset/easy/traking_assign_edge_topic/train/"
-test_dir = "../../reinforcement_learning/dataset/similar_dataset/easy/traking_assign_edge_topic/test/"
+train_dir = "../../reinforcement_learning/dataset/similar_dataset/easy/small15_select/train/"
+test_dir = "../../reinforcement_learning/dataset/similar_dataset/easy/small15_select/test/"
 
 file_base = "hight_load"
 
-create_similar_dataset(10, 10, 10, 10, train_dir, test_dir, file_base, 10)
+create_similar_dataset(5, 5, 1, 1, train_dir, test_dir, file_base, 10)
 
 #dataset_size = 10
 #create_data_set(dataset_size, index_file_base, config_file, traking_file_base, assign_file_base, edge_file_base, topic_file_base)
