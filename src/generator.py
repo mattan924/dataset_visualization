@@ -71,7 +71,7 @@ def generate_traking(index_file, config_file, out_file, seed=0):
 
 
 # トラッキングデータに pub/sub 関係を割り当てる
-def assign_topic(index_file, out_file, seed=0):
+def assign_topic(index_file, out_file, num_publisher=None, seed=0):
     # インデックスファイルが存在しない場合
     if not os.path.exists(index_file):
         sys.exit("index_file is not exist. Create index_file in advance.")
@@ -123,6 +123,23 @@ def assign_topic(index_file, out_file, seed=0):
 
         all_client = []
 
+        if num_publisher is not None:
+            if num_client*num_topic < num_publisher:
+                sys.exit("クライアントの数に対して、指定の num_publisher は大きすぎます。")
+
+            select_num = [int(num_publisher/num_topic) for _ in range(num_topic)]
+
+            remain_num_publisher = num_publisher - int(num_publisher/num_topic)*num_topic
+                
+            while(remain_num_publisher > 0):
+                idx = random.randint(0, num_topic-1)
+                select_num[idx] += 1
+                remain_num_publisher = remain_num_publisher -1
+
+            publisher_list = []
+            for n in range(num_topic):
+                publisher_list.append(random.sample(list(range(num_client)), select_num[n]))
+
         # トラッキングデータに対して pub/sub 関係を割り当てる
         for i in range(num_client):
             data_traking = data_set_traking.pop(0)
@@ -135,13 +152,21 @@ def assign_topic(index_file, out_file, seed=0):
             flag = True
             while(flag):
                 for t in all_topic:
-                    if t.init_topic(data_traking.x, data_traking.y):
-                        init_pub_topic[t.id] = True
-                        flag = False
-                    
-                    if t.init_topic(data_traking.x, data_traking.y):
-                        init_sub_topic[t.id] = True
-                        flag = False
+                    if num_publisher is not None:
+                        if data_traking.id in publisher_list[t.id]:
+                            init_pub_topic[t.id] = True
+                            flag = False
+                        else:
+                            init_sub_topic[t.id] = True
+                            flag = False
+                    else:
+                        if t.init_topic(data_traking.x, data_traking.y):
+                            init_pub_topic[t.id] = True
+                            flag = False
+                        
+                        if t.init_topic(data_traking.x, data_traking.y):
+                            init_sub_topic[t.id] = True
+                            flag = False
 
             c_topic = ClientTopic(data_traking.id, data_traking.x, data_traking.y, init_pub_topic, init_sub_topic)
 

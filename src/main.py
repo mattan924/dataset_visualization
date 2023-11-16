@@ -29,7 +29,7 @@ def create_data_set(data_set_size, index_file_base, config_file, traking_file_ba
         print(f"data_set is created {(i / data_set_size)*100}%")
 
 
-def create_similar_dataset(traking_data_size, assign_data_size, edge_data_size, topic_data_size, train_dir, test_dir, file_base, test_data_size):
+def create_similar_dataset(traking_data_size, assign_data_size, edge_data_size, topic_data_size, train_dir, test_dir, file_base, test_data_size, num_publisher=None):
     generate_data_size = traking_data_size*assign_data_size*edge_data_size*topic_data_size
     seed_base = random.randint(1, 1000000)
 
@@ -60,7 +60,7 @@ def create_similar_dataset(traking_data_size, assign_data_size, edge_data_size, 
                     generate_topic(index_file, config_file, topic_file, seed=seed_base+topic_num)
 
                     assign_file = assign_file_base + str(assign_num) + "_traking" + str(traking_num) + "_edge" + str(edge_num) + "_topic" + str(topic_num) + ".csv"
-                    assign_topic(index_file, assign_file, seed=seed_base+assign_num)
+                    assign_topic(index_file, assign_file, num_publisher=num_publisher, seed=seed_base+assign_num)
 
                     count += 1
                     print(f"data_set is created {(count / generate_data_size)*100}%")
@@ -109,37 +109,39 @@ def create_similar_dataset(traking_data_size, assign_data_size, edge_data_size, 
         print(f"{(count / test_data_size)*100} data is move to test dir")
 
 
-train_dir = "../../reinforcement_learning/dataset/similar_dataset/easy/small15_select/train/"
-test_dir = "../../reinforcement_learning/dataset/similar_dataset/easy/small15_select/test/"
 
-file_base = "hight_load"
+train_dir = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/train/"
+test_dir = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/test/"
 
-create_similar_dataset(5, 5, 1, 1, train_dir, test_dir, file_base, 10)
+file_base = "debug"
+
+create_similar_dataset(5, 5, 1, 1, train_dir, test_dir, file_base, 10, num_publisher=20)
+
 
 #dataset_size = 10
 #create_data_set(dataset_size, index_file_base, config_file, traking_file_base, assign_file_base, edge_file_base, topic_file_base)
 
 
-
-# index_file = "../dataset/data/index/index_readme.csv"
-# config_file = "../dataset/data/config/config_readme.csv"
-# traking_file = "../dataset/data/traking/traking_readme.csv"
-# assign_file = "../dataset/data/assign/assign_readme.csv"
-# edge_file = "../dataset/data/edge/edge_readme.csv"
-# topic_file = "../dataset/data/topic/topic_readme.csv"
+"""
+index_file = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/index/index_debug.csv"
+config_file = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/config/hight_load.csv"
+traking_file = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/traking/traking_debug.csv"
+assign_file = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/assign/assign_debug.csv"
+edge_file = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/edge/edge_debug.csv"
+topic_file = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/topic/topic_debug.csv"
 # animation_file = "../dataset/data/animation/animation_readme.gif"
 
 # traking_animation_file = "../dataset/data/animation/traking_readme.gif"
 
+generate_traking(index_file, config_file, traking_file)
 
-# generate_traking(index_file, config_file, traking_file)
+generate_edge(index_file, config_file, edge_file)
 
-# generate_edge(index_file, config_file, edge_file)
+generate_topic(index_file, config_file, topic_file)
 
-# generate_topic(index_file, config_file, topic_file)
+assign_topic(index_file, assign_file, num_publisher=20)
 
-# assign_topic(index_file, assign_file)
-
-# create_topic_animation(index_file, animation_file, 10)
+#create_topic_animation(index_file, animation_file, 10)
 
 # create_traking_animation(index_file, traking_animation_file, 10)
+"""
