@@ -65,7 +65,7 @@ def create_traking_animation(index_file, out_file, FPS=20):
         # 各タイムステップにおける描画情報の作成
         my_title = wind1.text((max_x-min_x)/2 - 0.8, 13, 'time : {}'.format(t))
         img1_client = wind1.scatter(x1_list, y1_list, c="black")
-        img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img1_edge = wind1.scatter(edge_x, edge_y, s=50, c="green", marker="s")
 
         img_list = [my_title, img1_client, img1_edge]
 
@@ -105,6 +105,7 @@ def create_topic_animation(index_file, out_file, FPS=20):
     data_set = util.read_data_set_topic(data_file, num_topic)
 
     # 描画領域の設定
+    plt.rcParams["font.size"] = 14
     fig = plt.figure()
     wind1 = fig.add_subplot(2, 2, 1)
     wind2 = fig.add_subplot(2, 2, 2)
@@ -177,19 +178,19 @@ def create_topic_animation(index_file, out_file, FPS=20):
         # 各タイムステップでの描画情報の作成
         my_title = wind1.text(11.5, 14, 'time : {}'.format(t))
         img1_client = wind1.scatter(x_list, y_list, c="black")
-        img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img1_edge = wind1.scatter(edge_x, edge_y, s=50, c="green", marker="s")
         img2_pub = wind2.scatter(pub_x_list[0], pub_y_list[0], c="red")
         img2_sub = wind2.scatter(sub_x_list[0], sub_y_list[0], c="blue")
         img2_pub_sub = wind2.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
-        img2_edge = wind2.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img2_edge = wind2.scatter(edge_x, edge_y, s=50, c="green", marker="s")
         img3_pub = wind3.scatter(pub_x_list[1], pub_y_list[1], c="red")
         img3_sub = wind3.scatter(sub_x_list[1], sub_y_list[1], c="blue")
         img3_pub_sub = wind3.scatter(pub_sub_x_list[1], pub_sub_y_list[1], c="purple")
-        img3_edge = wind3.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img3_edge = wind3.scatter(edge_x, edge_y, s=50, c="green", marker="s")
         img4_pub = wind4.scatter(pub_x_list[2], pub_y_list[2], c="red")
         img4_sub = wind4.scatter(sub_x_list[2], sub_y_list[2], c="blue")
         img4_pub_sub = wind4.scatter(pub_sub_x_list[2], pub_sub_y_list[2], c="purple")
-        img4_edge = wind4.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img4_edge = wind4.scatter(edge_x, edge_y, s=50, c="green", marker="s")
         img_list = [my_title, img1_client, img1_edge, img2_pub, img2_sub, img2_pub_sub, img2_edge, img3_pub, img3_sub, img3_pub_sub, img3_edge, img4_pub, img4_sub, img4_pub_sub, img4_edge]
 
         # 描画情報を追加
@@ -276,7 +277,7 @@ def create_single_topic_animation(index_file, out_file, FPS=20):
         img1_pub = wind1.scatter(pub_x_list[0], pub_y_list[0], c="red")
         img1_sub = wind1.scatter(sub_x_list[0], sub_y_list[0], c="blue")
         img1_pub_sub = wind1.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
-        img1_edge = wind1.scatter(edge_x, edge_y, s=20, c="green", marker="s")
+        img1_edge = wind1.scatter(edge_x, edge_y, s=50, c="green", marker="s")
 
         img_list = [my_title, img1_pub, img1_sub, img1_pub_sub, img1_edge]
 
@@ -411,8 +412,8 @@ def create_single_assign_animation(index_file, out_file, FPS=20):
         img_publisher = wind1.scatter(pub_x_list[n], pub_y_list[n], c="red")
         img_subscriber = wind1.scatter(sub_x_list[n], sub_y_list[n], c="blue")
         img_pub_sub = wind1.scatter(pub_sub_x_list[n], pub_sub_y_list[n], c="purple")
-        img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
-        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
+        img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=50, c="green", marker="s")
+        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=50, c="darkorange", marker="s")
 
 
         img_list = [my_title, img_publisher, img_subscriber, img_pub_sub, img_normal_edge, img_over_edge]
@@ -573,26 +574,26 @@ def create_assign_animation(index_file, out_file, FPS=20):
 
         my_title = wind1.text(11, 13.5, 'time : {}'.format(t))
         client_dist = wind1.scatter(x_list, y_list, c="black")
-        img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
-        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
+        img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=50, c="green", marker="s")
+        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=50, c="darkorange", marker="s")
 
         img_publisher1 = wind2.scatter(pub_x_list[0], pub_y_list[0], c="red")
         img_subscriber1 = wind2.scatter(sub_x_list[0], sub_y_list[0], c="blue")
         img_pub_sub1 = wind2.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
-        img_normal_edge1 = wind2.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
-        img_over_edge1 = wind2.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
+        img_normal_edge1 = wind2.scatter(normal_edge_x, normal_edge_y, s=50, c="green", marker="s")
+        img_over_edge1 = wind2.scatter(over_edge_x, over_edge_y, s=50, c="darkorange", marker="s")
 
         img_publisher2 = wind3.scatter(pub_x_list[1], pub_y_list[1], c="red")
         img_subscriber2 = wind3.scatter(sub_x_list[1], sub_y_list[1], c="blue")
         img_pub_sub2 = wind3.scatter(pub_sub_x_list[1], pub_sub_y_list[1], c="purple")
-        img_normal_edge2 = wind3.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
-        img_over_edge2 = wind3.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
+        img_normal_edge2 = wind3.scatter(normal_edge_x, normal_edge_y, s=50, c="green", marker="s")
+        img_over_edge2 = wind3.scatter(over_edge_x, over_edge_y, s=50, c="darkorange", marker="s")
 
         img_publisher3 = wind4.scatter(pub_x_list[2], pub_y_list[2], c="red")
         img_subscriber3 = wind4.scatter(sub_x_list[2], sub_y_list[2], c="blue")
         img_pub_sub3 = wind4.scatter(pub_sub_x_list[2], pub_sub_y_list[2], c="purple")
-        img_normal_edge3 = wind4.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
-        img_over_edge3 = wind4.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
+        img_normal_edge3 = wind4.scatter(normal_edge_x, normal_edge_y, s=50, c="green", marker="s")
+        img_over_edge3 = wind4.scatter(over_edge_x, over_edge_y, s=50, c="darkorange", marker="s")
 
         img_list = [my_title, client_dist, img_normal_edge, img_over_edge, img_publisher1, img_subscriber1, img_pub_sub1, img_normal_edge1, img_over_edge1, img_publisher2, img_subscriber2, img_pub_sub2, img_normal_edge2, img_over_edge2, img_publisher3, img_subscriber3, img_pub_sub3, img_normal_edge3, img_over_edge3]
 
@@ -755,26 +756,26 @@ def create_opt_animation(index_file, out_file, opt_solution, FPS=20):
                 
         my_title = wind1.text(11, 13, 'time : {}'.format(t))
         client_dist = wind1.scatter(x_list, y_list, c="black")
-        img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
-        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
+        img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=50, c="green", marker="s")
+        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=50, c="darkorange", marker="s")
 
         img_publisher1 = wind2.scatter(pub_x_list[0], pub_y_list[0], c="red")
         img_subscriber1 = wind2.scatter(sub_x_list[0], sub_y_list[0], c="blue")
         img_pub_sub1 = wind2.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
-        img_normal_edge1 = wind2.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
-        img_over_edge1 = wind2.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
+        img_normal_edge1 = wind2.scatter(normal_edge_x, normal_edge_y, s=50, c="green", marker="s")
+        img_over_edge1 = wind2.scatter(over_edge_x, over_edge_y, s=50, c="darkorange", marker="s")
 
         img_publisher2 = wind3.scatter(pub_x_list[1], pub_y_list[1], c="red")
         img_subscriber2 = wind3.scatter(sub_x_list[1], sub_y_list[1], c="blue")
         img_pub_sub2 = wind3.scatter(pub_sub_x_list[1], pub_sub_y_list[1], c="purple")
-        img_normal_edge2 = wind3.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
-        img_over_edge2 = wind3.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
+        img_normal_edge2 = wind3.scatter(normal_edge_x, normal_edge_y, s=50, c="green", marker="s")
+        img_over_edge2 = wind3.scatter(over_edge_x, over_edge_y, s=50, c="darkorange", marker="s")
 
         img_publisher3 = wind4.scatter(pub_x_list[2], pub_y_list[2], c="red")
         img_subscriber3 = wind4.scatter(sub_x_list[2], sub_y_list[2], c="blue")
         img_pub_sub3 = wind4.scatter(pub_sub_x_list[2], pub_sub_y_list[2], c="purple")
-        img_normal_edge3 = wind4.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
-        img_over_edge3 = wind4.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
+        img_normal_edge3 = wind4.scatter(normal_edge_x, normal_edge_y, s=50, c="green", marker="s")
+        img_over_edge3 = wind4.scatter(over_edge_x, over_edge_y, s=50, c="darkorange", marker="s")
 
         img_list = [my_title, client_dist, img_normal_edge, img_over_edge, img_publisher1, img_subscriber1, img_pub_sub1, img_normal_edge1, img_over_edge1, img_publisher2, img_subscriber2, img_pub_sub2, img_normal_edge2, img_over_edge2, img_publisher3, img_subscriber3, img_pub_sub3, img_normal_edge3, img_over_edge3]
 
@@ -920,8 +921,8 @@ def create_single_opt_animation(index_file, out_file, opt_solution, FPS):
         img_publisher1 = wind1.scatter(pub_x_list[0], pub_y_list[0], c="red")
         img_subscriber1 = wind1.scatter(sub_x_list[0], sub_y_list[0], c="blue")
         img_pub_sub1 = wind1.scatter(pub_sub_x_list[0], pub_sub_y_list[0], c="purple")
-        img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=20, c="green", marker="s")
-        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=20, c="darkorange", marker="s")
+        img_normal_edge = wind1.scatter(normal_edge_x, normal_edge_y, s=50, c="green", marker="s")
+        img_over_edge = wind1.scatter(over_edge_x, over_edge_y, s=50, c="darkorange", marker="s")
 
         img_list = [img_publisher1, img_subscriber1, img_pub_sub1, img_normal_edge, img_over_edge]
 
