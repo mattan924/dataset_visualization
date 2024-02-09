@@ -11,17 +11,17 @@ class Topic(metaclass = ABCMeta):
         self.save_period = save_period
 
         if publish_rate == None:
-            self.publish_rate = random.randint(10, 1000) / 100
+            self.publish_rate = random.randint(500, 1000) / 100
         else:
             self.publish_rate = publish_rate
 
         if data_size == None:
-            self.data_size = random.randint(1, 256) / 1e6 # 1~256 MB (MQTTの最大データサイズ) TB への変換
+            self.data_size = (256*random.randint(1, 5)) / 1e6 # 1~256 MB (MQTTの最大データサイズ) TB への変換
         else:
             self.data_size = data_size
 
         if require_cycle == None:
-            self.require_cycle = random.randint(5e5, 5e6) / 1e9
+            self.require_cycle = random.randint(5e6, 1e7) / 1e9
         else:
             self.require_cycle = require_cycle
 
@@ -45,7 +45,7 @@ class TopicUniform(Topic):
 
 
     def init_topic(self, x, y):
-        if random.uniform(0, 100) < 33:
+        if random.uniform(0, 100) < 40:
             return True
         else:
             return False

@@ -35,13 +35,17 @@ def read_config(config_path):
     cloud_cycle = int(f.readline().split(",")[1])
     save_period = int(f.readline().split(",")[1])
     speed = int(f.readline().split(",")[1])
+    topic_cycle = float(f.readline().split(",")[1])
+    publish_rate = float(f.readline().split(",")[1])
 
     parameter = { 'min_x' : min_x, 'max_x' : max_x, 'min_y' : min_y, 'max_y' : max_y, 'simulation_time' : simulation_time, 'time_step' : time_step}
     parameter1 = { 'num_client' : num_client, 'num_topic' : num_topic, 'num_edge' : num_edge}
     parameter2 = { 'volume' : volume, 'cpu_cycle' : cpu_cycle, 'cloud_time' : cloud_time, 'cloud_cycle' : cloud_cycle, 'save_period' : save_period, 'speed' : speed}
+    parameter3 = {'topic_cycle':topic_cycle, 'publish_rate': publish_rate}
 
     parameter.update(parameter1)
     parameter.update(parameter2)
+    parameter.update(parameter3)
 
     return parameter
 
@@ -58,7 +62,7 @@ def read_edge(edge_path):
         x = data['x']
         y = data['y']
         volume = data['volume']
-        cpu_cycle = data['cpu_cycle']
+        cpu_cycle = data['cpu_cycle'] 
 
         edge = Edge(id, x, y, volume, cpu_cycle)
         all_edge.append(edge)

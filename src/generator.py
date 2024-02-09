@@ -148,25 +148,19 @@ def assign_topic(index_file, out_file, num_publisher=None, seed=0):
             init_pub_topic = np.zeros(num_topic)
             init_sub_topic = np.zeros(num_topic)
 
-            #  必ず pub/sub のどちらかはTrue
-            flag = True
-            while(flag):
-                for t in all_topic:
-                    if num_publisher is not None:
-                        if data_traking.id in publisher_list[t.id]:
-                            init_pub_topic[t.id] = True
-                            flag = False
-                        else:
-                            init_sub_topic[t.id] = True
-                            flag = False
-                    else:
-                        if t.init_topic(data_traking.x, data_traking.y):
-                            init_pub_topic[t.id] = True
-                            flag = False
+            for t in all_topic:
+                if num_publisher is not None:
+                    if data_traking.id in publisher_list[t.id]:
+                        init_pub_topic[t.id] = True
+                    
+                    if t.init_topic(data_traking.x, data_traking.y):
+                        init_sub_topic[t.id] = True
+                else:
+                    if t.init_topic(data_traking.x, data_traking.y):
+                        init_pub_topic[t.id] = True
                         
-                        if t.init_topic(data_traking.x, data_traking.y):
-                            init_sub_topic[t.id] = True
-                            flag = False
+                    if t.init_topic(data_traking.x, data_traking.y):
+                        init_sub_topic[t.id] = True
 
             c_topic = ClientTopic(data_traking.id, data_traking.x, data_traking.y, init_pub_topic, init_sub_topic)
 
@@ -229,6 +223,7 @@ def generate_edge(index_file, config_file, out_file, seed=0):
             x = 2 + 4*j
             y = 2 + 4*i
 
+            """
             tmp = random.randint(0, 2)
             if tmp == 0:
                 volume_tmp = volume * 1
@@ -246,6 +241,9 @@ def generate_edge(index_file, config_file, out_file, seed=0):
                 cpu_cycle_tmp = cpu_cycle * 0.75
             
             all_edge.append(Edge(id, x, y, volume_tmp, cpu_cycle_tmp))
+            """
+
+            all_edge.append(Edge(id, x, y, volume, cpu_cycle))
     
     util.write_edge_csv(out_file, all_edge)
 
@@ -280,12 +278,33 @@ def generate_topic(index_file, config_file, out_file, seed=0):
     max_y = parameter['max_y']
     num_topic = parameter['num_topic']
     save_period = parameter['save_period']
+    topic_cycle = parameter['topic_cycle']
+    publish_rate = parameter['publish_rate']
 
     all_topic = []
     # トピックの生成
     #  作成したい topic に応じてここを変える
     for i in range(num_topic):
-        t = TopicUniform(i, save_period)
+        # tmp = random.randint(0, 2)
+        # if tmp == 0:
+        #     publish_rate_tmp = publish_rate
+        # elif tmp == 1:
+        #     publish_rate_tmp = publish_rate * 1.5
+        # else:
+        #     publish_rate_tmp = publish_rate * 0.5
+        
+        # tmp = random.randint(0, 2)
+        # if tmp == 0:
+        #     topic_cycle_tmp = topic_cycle
+        # elif tmp == 1:
+        #     topic_cycle_tmp = topic_cycle * 1.5
+        # else:
+        #     topic_cycle_tmp = topic_cycle * 0.5
+
+        publish_rate_tmp = publish_rate * random.uniform(0.5, 1.5)
+        topic_cycle_tmp = topic_cycle * random.uniform(0.5, 1.5)
+
+        t = TopicUniform(i, save_period, publish_rate=publish_rate_tmp, require_cycle=topic_cycle_tmp)
         all_topic.append(t)
 
     util.write_topic_csv(out_file, all_topic)

@@ -2,7 +2,7 @@ from generator import *
 from animation import *
 from util import *
 import random
-import pandas
+import pandas as pd
 import os
 
 
@@ -40,8 +40,68 @@ def create_similar_dataset(traking_data_size, assign_data_size, edge_data_size, 
     topic_file_base = train_dir + "topic/" + file_base
     assign_file_base = train_dir + "assign/" + file_base
 
+    parameter = util.read_config(config_file)
+    num_topic = parameter['num_topic']
+    num_edge = parameter['num_edge']
+    edge_max_cycle = float(parameter['cpu_cycle'])
+    max_volume = float(parameter['volume'])
+
     count = 0
     index_file_list = []
+    topic_seed_list = []
+
+    for topic_num in range(topic_data_size):
+        index_file = index_file_base + "_tmp.csv"
+        create_index_file(index_file, config_file)
+        topic_file = topic_file_base + "_tmp.csv"
+
+        while(True):
+            topic_seed = random.randint(1, 1000000)
+            generate_topic(index_file, config_file, topic_file, seed=topic_seed)
+
+            all_topic = util.read_topic(topic_file)
+
+            sum_edge_cycle = 0
+            sum_total_cycle = 0
+            sum_volume = 0
+
+            flag = True
+            print(f"start")
+
+            for topic in all_topic:
+                edge_cycle = topic.publish_rate * (num_publisher / (num_topic * num_edge)) * topic.require_cycle * math.log(topic.publish_rate * topic.save_period * (num_publisher / num_topic))
+                total_cycle = topic.publish_rate * (num_publisher / num_topic) * topic.require_cycle * math.log(topic.publish_rate * topic.save_period * (num_publisher / num_topic))
+
+                volume = topic.publish_rate * topic.save_period * (num_publisher / num_topic) * topic.data_size
+
+                if volume >= max_volume:
+                    flag = False
+                    print(f"break")
+                    break
+
+                print(f"edge_cycle = {edge_cycle}, total_cycle = {total_cycle}, volume = {volume}")
+                sum_edge_cycle += edge_cycle
+                sum_total_cycle += total_cycle
+                sum_volume += volume
+
+            if flag:
+                if sum_total_cycle < edge_max_cycle:
+                    print(f"sum: {sum_edge_cycle}, {sum_total_cycle}, {sum_volume}")
+
+                    print(f"{topic_num}/{topic_data_size}: generate data\n generate next data?\n input y:yes or n:not")
+                    input_str = input()
+
+                    if input_str == 'y':
+                        topic_seed_list.append(topic_seed)
+                        break
+                    elif input_str == 'n':
+                        print(f"you input n: regenerate data")
+                    else:
+                        sys.exit(f"error")
+
+    os.remove(index_file_base + "_tmp.csv")
+    os.remove(topic_file_base + "_tmp.csv")
+    
     for traking_num in range(traking_data_size):
         for assign_num in range(assign_data_size):
             for edge_num in range(edge_data_size):
@@ -50,14 +110,14 @@ def create_similar_dataset(traking_data_size, assign_data_size, edge_data_size, 
                     create_index_file(index_file, config_file)
                     index_file_list.append(index_file)
 
-                    traking_file = traking_file_base + str(traking_num) + "_assign" + str(assign_num) + "_edge" + str(edge_num) + "_topic" + str(topic_num) + ".csv"
-                    generate_traking(index_file, config_file, traking_file, seed=seed_base+traking_num)
+                    topic_file = topic_file_base + str(topic_num) + "_traking" + str(traking_num) + "_assign" + str(assign_num) + "_edge" + str(edge_num) + ".csv"
+                    generate_topic(index_file, config_file, topic_file, seed=topic_seed_list[topic_num])
 
                     edge_file = edge_file_base + str(edge_num) + "_traking" + str(traking_num) + "_assign" + str(assign_num) + "_topic" + str(topic_num) + ".csv"
                     generate_edge(index_file, config_file, edge_file, seed=seed_base+edge_num)
 
-                    topic_file = topic_file_base + str(topic_num) + "_traking" + str(traking_num) + "_assign" + str(assign_num) + "_edge" + str(edge_num) + ".csv"
-                    generate_topic(index_file, config_file, topic_file, seed=seed_base+topic_num)
+                    traking_file = traking_file_base + str(traking_num) + "_assign" + str(assign_num) + "_edge" + str(edge_num) + "_topic" + str(topic_num) + ".csv"
+                    generate_traking(index_file, config_file, traking_file, seed=seed_base+traking_num)
 
                     assign_file = assign_file_base + str(assign_num) + "_traking" + str(traking_num) + "_edge" + str(edge_num) + "_topic" + str(topic_num) + ".csv"
                     assign_topic(index_file, assign_file, num_publisher=num_publisher, seed=seed_base+assign_num)
@@ -110,38 +170,82 @@ def create_similar_dataset(traking_data_size, assign_data_size, edge_data_size, 
 
 
 
-train_dir = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/train/"
-test_dir = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/test/"
 
-file_base = "debug"
+train_dir = "../../reinforcement_learning/dataset/master_thesis/multi_data/general_evaluation/low_capacity_high_cycle_client40_fix40_data10000/train/"
+test_dir = "../../reinforcement_learning/dataset/master_thesis/multi_data/general_evaluation/low_capacity_high_cycle_client40_fix40_data10000/test/"
 
-create_similar_dataset(5, 5, 1, 1, train_dir, test_dir, file_base, 10, num_publisher=20)
+file_base = "data_fix"
 
+create_similar_dataset(50, 40, 1, 5, train_dir, test_dir, file_base, test_data_size=10, num_publisher=40)
 
-#dataset_size = 10
-#create_data_set(dataset_size, index_file_base, config_file, traking_file_base, assign_file_base, edge_file_base, topic_file_base)
 
 
 """
-index_file = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/index/index_debug.csv"
-config_file = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/config/hight_load.csv"
-traking_file = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/traking/traking_debug.csv"
-assign_file = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/assign/assign_debug.csv"
-edge_file = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/edge/edge_debug.csv"
-topic_file = "../../reinforcement_learning/dataset/similar_dataset/easy/debug/topic/topic_debug.csv"
-# animation_file = "../dataset/data/animation/animation_readme.gif"
+num_publisher = 100
+num_data = 100
 
-# traking_animation_file = "../dataset/data/animation/traking_readme.gif"
+base_path = "../../reinforcement_learning/dataset/master_thesis/single_data/"
 
-generate_traking(index_file, config_file, traking_file)
+file_name_base = "mat_time_client" + str(num_publisher) + "_fix" + str(num_publisher)
 
-generate_edge(index_file, config_file, edge_file)
+config_file = base_path + "config/" + file_name_base + ".csv"
 
-generate_topic(index_file, config_file, topic_file)
+parameter = util.read_config(config_file)
+num_topic = parameter['num_topic']
+num_edge = parameter['num_edge']
 
-assign_topic(index_file, assign_file, num_publisher=20)
+for data_idx in range(num_data):
 
-#create_topic_animation(index_file, animation_file, 10)
+    file_name = file_name_base + "_" + str(data_idx) + ".csv"
 
-# create_traking_animation(index_file, traking_animation_file, 10)
+    index_file = base_path + "index/" + file_name_base + "_" + str(data_idx) + ".csv"
+    traking_file = base_path + "traking/" + file_name_base + "_" + str(data_idx) + ".csv"
+    assign_file = base_path + "assign/" + file_name_base + "_" + str(data_idx) + ".csv"
+    edge_file = base_path + "edge/" + file_name_base + "_" + str(data_idx) + ".csv"
+    topic_file = base_path + "topic/" + file_name_base + "_" + str(data_idx) + ".csv"
+
+    create_index_file(index_file, config_file)
+
+    if data_idx == 0:
+        while(True):
+            topic_seed = random.randint(1, 1000000)
+            generate_topic(index_file, config_file, topic_file, seed=topic_seed)
+
+            all_topic = util.read_topic(topic_file)
+
+            sum_edge_cycle = 0
+            sum_total_cycle = 0
+            sum_volume = 0
+            for topic in all_topic:
+                edge_cycle = topic.publish_rate * (num_publisher / (num_topic * num_edge)) * topic.require_cycle * math.log(topic.publish_rate * topic.save_period * (num_publisher / num_topic))
+                total_cycle = topic.publish_rate * (num_publisher / num_topic) * topic.require_cycle * math.log(topic.publish_rate * topic.save_period * (num_publisher / num_topic))
+
+                volume = topic.publish_rate * topic.save_period * (num_publisher / num_topic) * topic.data_size
+
+                print(f"edge_cycle = {edge_cycle}, total_cycle = {total_cycle}, volume = {volume}")
+                sum_edge_cycle += edge_cycle
+                sum_total_cycle += total_cycle
+                sum_volume += volume
+                                
+            print(f"sum: {sum_edge_cycle}, {sum_total_cycle}, {sum_volume}")
+
+            print(f"generate continue?\n input y:yes, continue. or n:not, regenerate data")
+            input_str = input()
+
+            if input_str == 'y':
+                break
+            elif input_str == 'n':
+                print(f"you input n: regenerate data")
+            else:
+                sys.exit(f"error")
+
+    generate_topic(index_file, config_file, topic_file, seed=topic_seed)
+
+    generate_edge(index_file, config_file, edge_file)
+
+    generate_traking(index_file, config_file, traking_file)
+
+    assign_topic(index_file, assign_file, num_publisher=num_publisher)
+
+    print(f"{(data_idx/num_data)*100} % complete")
 """
